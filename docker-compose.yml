@@ -11,7 +11,7 @@ services:
     depends_on:
       - stats-db
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats-db
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats-server-db
 #      - TZ=Europe/Moscow
 
   stats-db:
@@ -20,7 +20,7 @@ services:
     ports:
       - "6541:5432"
     environment:
-      - POSTGRES_DB=stats-db
+      - POSTGRES_DB=stats-server-db
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
 #      - TZ=Europe/Moscow
@@ -34,7 +34,7 @@ services:
     depends_on:
       - ewm-db
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/ewm
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/ewm-server-db
 #      - TZ=Europe/Moscow
 
   ewm-db:
@@ -43,7 +43,7 @@ services:
     ports:
       - "6542:5433"
     environment:
-      - POSTGRES_DB=ewm
+      - POSTGRES_DB=ewm-server-db
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
 #      - TZ=Europe/Moscow

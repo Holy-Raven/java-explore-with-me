@@ -19,8 +19,6 @@ public class HitController {
 
     private final HitService hitService;
 
-    //делаем запись в БД, что на uri сервиса арр был отправлен запрос пользователем ір во время timestamp
-
     @PostMapping("/hit")
     @ResponseStatus(HttpStatus.CREATED)
     public void addHit(@Valid @RequestBody HitDto hitDto) {
