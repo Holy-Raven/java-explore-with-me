@@ -11,8 +11,8 @@
 	</parent>
 
 	<name>Explore With Me</name>
-    <modules>
-        <module>ewm-service</module>
+	<modules>
+		<module>ewm-service</module>
 		<module>stats-service</module>
 	</modules>
 
