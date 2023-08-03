@@ -23,7 +23,7 @@ public class UserController {
     @ResponseStatus(value = HttpStatus.CREATED)
     public UserDto addUser(@Valid @RequestBody UserDto userDto) {
 
-        log.info("Add User {} ", userDto.getId());
+        log.info("Add User {} ", userDto.getName());
         return userService.addUser(userDto);
     }
 

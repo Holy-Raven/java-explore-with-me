@@ -44,7 +44,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(long userId) {
 
-        unionService.checkUser(userId);
+        unionService.getUserOrNotFound(userId);
         userRepository.deleteById(userId);
     }
 }
