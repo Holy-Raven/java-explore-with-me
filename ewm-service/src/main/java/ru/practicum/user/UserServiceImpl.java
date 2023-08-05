@@ -9,6 +9,7 @@ import ru.practicum.user.dto.UserDto;
 import ru.practicum.util.UnionService;
 
 import java.util.List;
+
 @Slf4j
 @Service
 @Transactional(readOnly = true)

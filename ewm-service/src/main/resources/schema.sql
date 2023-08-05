@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS events (
 	annotation 			VARCHAR(2000)								NOT NULL,
 	event_date 			TIMESTAMP 		WITHOUT TIME ZONE 			NOT NULL,
 	paid 				BOOLEAN 		DEFAULT FALSE				NOT NULL,
-	description 		VARCHAR(7000),
+	description 		VARCHAR(7000)								NOT NULL,
 	confirmed_requests  BIGINT,
 	participant_limit 	BIGINT 			DEFAULT 0,
 	request_moderation 	BOOLEAN 		DEFAULT FALSE,

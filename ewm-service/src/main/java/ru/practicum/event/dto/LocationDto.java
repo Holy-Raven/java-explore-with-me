@@ -1,20 +1,16 @@
 package ru.practicum.event.dto;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import javax.validation.constraints.NotBlank;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class LocationDto {
 
-    @NotBlank
-    Double lat;
+    Float lat;
 
-    @NotBlank
-    Double lon;
+    Float lon;
 }

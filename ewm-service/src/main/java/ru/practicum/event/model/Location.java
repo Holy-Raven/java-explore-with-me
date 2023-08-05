@@ -20,9 +20,9 @@ public class Location {
     @EqualsAndHashCode.Include
     Long id;
 
-    @Column(name = "lat", nullable = false)
-    Double lat;
+    @Column(name = "lat")
+    Float lat;
 
-    @Column(name = "lon", nullable = false)
-    Double lon;
+    @Column(name = "lon")
+    Float lon;
 }

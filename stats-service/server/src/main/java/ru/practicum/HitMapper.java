@@ -3,9 +3,10 @@ package ru.practicum;
 import ru.practicum.dto.HitDto;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+
+import static ru.practicum.Util.FORMATTER;
 
 public class HitMapper {
 
@@ -28,8 +29,7 @@ public class HitMapper {
                 .app(hitDto.getApp())
                 .uri(hitDto.getUri())
                 .ip(hitDto.getIp())
-                .timestamp(LocalDateTime.parse(hitDto.getTimestamp(),
-                        DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                .timestamp(LocalDateTime.parse(hitDto.getTimestamp(),FORMATTER))
                 .build();
         return hit;
     }

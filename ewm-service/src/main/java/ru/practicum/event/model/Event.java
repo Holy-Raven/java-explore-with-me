@@ -1,7 +1,9 @@
 package ru.practicum.event.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.format.annotation.DateTimeFormat;
 import ru.practicum.category.Category;
 import ru.practicum.user.User;
 import ru.practicum.util.State;
@@ -45,6 +47,7 @@ public class Event {
     String annotation;
 
     @Column(name = "event_date")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime eventDate;
 
     @Column(name = "paid")
@@ -64,9 +67,11 @@ public class Event {
     Boolean requestModeration;
 
     @Column(name = "published_on")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime publishedOn;
 
     @Column(name = "created_on")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime createdOn;
 
     @Enumerated(EnumType.STRING)

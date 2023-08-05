@@ -26,7 +26,7 @@ public class HitServiceImpl implements HitService {
     }
 
     @Override
-    public List<StatsDto> findStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
+    public List<StatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
 
         if (uris == null || uris.isEmpty()) {
             if (unique) {
