@@ -1,4 +1,4 @@
-package ru.practicum.category;
+package ru.practicum.event.model;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -10,16 +10,19 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "categories", schema = "public")
+@Table(name = "locations")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Category {
+public class Location {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
     Long id;
 
-    @Column(name = "name", nullable = false)
-    String name;
+    @Column(name = "lat", nullable = false)
+    Double lat;
+
+    @Column(name = "lon", nullable = false)
+    Double lon;
 }

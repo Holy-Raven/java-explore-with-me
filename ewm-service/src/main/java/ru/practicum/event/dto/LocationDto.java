@@ -1,17 +1,20 @@
-package ru.practicum.user.dto;
-
+package ru.practicum.event.dto;
 
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
+import javax.validation.constraints.NotBlank;
+
 @Data
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserShortDto {
+public class LocationDto {
 
-    Long id;
+    @NotBlank
+    Double lat;
 
-    String name;
+    @NotBlank
+    Double lon;
 }

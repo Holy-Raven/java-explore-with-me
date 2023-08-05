@@ -1,18 +1,21 @@
 package ru.practicum.category.dto;
 
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @Data
 @Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class CategoryDto {
 
-    private Long id;
+    Long id;
 
     @Size(max = 50, message = "name must be less than 50")
     @NotBlank(message = "name cannot be empty and consist only of spaces.")
-    private String name;
+    String name;
 }

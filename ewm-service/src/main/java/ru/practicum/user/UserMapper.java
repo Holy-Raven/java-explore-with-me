@@ -1,6 +1,7 @@
 package ru.practicum.user;
 
 import ru.practicum.user.dto.UserDto;
+import ru.practicum.user.dto.UserShortDto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +15,14 @@ public class UserMapper {
                 .name(user.getName())
                 .build();
         return userDto;
+    }
+
+    public static UserShortDto returnUserShortDto(User user) {
+        UserShortDto userShortDto = UserShortDto.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .build();
+        return userShortDto;
     }
 
     public static User returnUser(UserDto userDto) {
