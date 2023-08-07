@@ -6,10 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.event.EventService;
 
-import ru.practicum.event.dto.EventFullDto;
-import ru.practicum.event.dto.EventNewDto;
-import ru.practicum.event.dto.EventShortDto;
-import ru.practicum.event.dto.EventUpdateDto;
+import ru.practicum.event.dto.*;
+import ru.practicum.request.dto.RequestDto;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
@@ -23,6 +21,8 @@ import java.util.List;
 public class EventPrivateController {
 
     private final EventService eventService;
+
+
     @PostMapping
     @ResponseStatus(value = HttpStatus.CREATED)
     public EventFullDto addEvent(@Valid @RequestBody EventNewDto eventNewDto,
@@ -45,7 +45,7 @@ public class EventPrivateController {
     @GetMapping("/{eventId}")
     @ResponseStatus(value = HttpStatus.OK)
     public EventFullDto getUserEventById(@PathVariable Long userId,
-                                 @PathVariable Long eventId) {
+                                         @PathVariable Long eventId) {
 
         log.info("Get Event id {}, for User id {} ", eventId, userId);
         return eventService.getUserEventById(userId, eventId);
@@ -59,5 +59,26 @@ public class EventPrivateController {
 
         log.info("User id {}, update Event {} ", eventId, eventUpdateDto.getAnnotation());
         return eventService.updateEventByUserId(eventUpdateDto, userId, eventId);
+    }
+
+
+
+    @GetMapping("/{eventId}/requests")
+    @ResponseStatus(value = HttpStatus.OK)
+    private List<RequestDto> getRequestsForEventIdByUserId(@PathVariable Long userId,
+                                                           @PathVariable Long eventId) {
+
+        log.info("Get all requests for event id{} by user Id{}.", eventId, userId);
+        return eventService.getRequestsForEventIdByUserId(userId, eventId);
+    }
+
+    @PatchMapping("/{eventId}/requests")
+    @ResponseStatus(value = HttpStatus.OK)
+    private RequestUpdateDtoResult updateStatusRequestsForEventIdByUserId(@RequestBody @Valid RequestUpdateDtoRequest requestDto,
+                                                                          @PathVariable Long userId,
+                                                                          @PathVariable Long eventId) {
+
+        log.info("Update status request for event id{}, by user id{}.", eventId,  userId);
+        return eventService.updateStatusRequestsForEventIdByUserId(requestDto, userId, eventId);
     }
 }

@@ -2,11 +2,8 @@ package ru.practicum;
 
 import ru.practicum.dto.HitDto;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import static ru.practicum.Util.FORMATTER;
 
 public class HitMapper {
 
@@ -17,7 +14,7 @@ public class HitMapper {
                 .app(hit.getApp())
                 .uri(hit.getUri())
                 .ip(hit.getIp())
-                .timestamp(hit.getTimestamp().toString())
+                .timestamp(hit.getTimestamp())
                 .build();
         return hitDto;
     }
@@ -29,7 +26,7 @@ public class HitMapper {
                 .app(hitDto.getApp())
                 .uri(hitDto.getUri())
                 .ip(hitDto.getIp())
-                .timestamp(LocalDateTime.parse(hitDto.getTimestamp(),FORMATTER))
+                .timestamp(hitDto.getTimestamp())
                 .build();
         return hit;
     }

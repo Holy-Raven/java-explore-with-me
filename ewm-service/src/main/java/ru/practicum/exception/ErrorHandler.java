@@ -30,14 +30,14 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleUnsupportedStatusException(final UnsupportedStateException e) {
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleEmailExistException(final ConstraintViolationException e) {
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleEmailExistException(final ConstraintViolationException e) {
+    public ErrorResponse handleEmailExistException(final ConflictException e) {
         return new ErrorResponse(e.getMessage());
     }
 }

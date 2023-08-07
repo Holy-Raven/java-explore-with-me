@@ -1,6 +1,6 @@
-package ru.practicum.util;
+package ru.practicum.util.enums;
 
-import ru.practicum.exception.UnsupportedStateException;
+import ru.practicum.exception.ValidationException;
 
 public enum State {
     PENDING,
@@ -11,7 +11,7 @@ public enum State {
         try {
             return State.valueOf(state);
         } catch (Exception e) {
-            throw new UnsupportedStateException("Unknown state: " + state);
+            throw new ValidationException("Unknown state: " + state);
         }
     }
 }

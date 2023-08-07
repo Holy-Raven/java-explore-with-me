@@ -6,20 +6,26 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.category.Category;
-import ru.practicum.event.dto.EventFullDto;
-import ru.practicum.event.dto.EventNewDto;
-import ru.practicum.event.dto.EventShortDto;
-import ru.practicum.event.dto.EventUpdateDto;
+import ru.practicum.event.dto.*;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.Location;
+import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.ValidationException;
+import ru.practicum.request.Request;
+import ru.practicum.request.RequestMapper;
+import ru.practicum.request.RequestRepository;
+import ru.practicum.request.dto.RequestDto;
 import ru.practicum.user.User;
-import ru.practicum.util.State;
-import ru.practicum.util.StateAction;
+import ru.practicum.util.enums.State;
+import ru.practicum.util.enums.StateAction;
 import ru.practicum.util.UnionService;
+import ru.practicum.util.enums.Status;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
 @Slf4j
 @Service
 @Transactional(readOnly = true)
@@ -28,6 +34,7 @@ public class EventServiceImpl implements EventService {
 
     private final UnionService unionService;
     private final EventRepository eventRepository;
+    private final RequestRepository requestRepository;
     private final LocationRepository locationRepository;
 
     @Override
@@ -71,7 +78,7 @@ public class EventServiceImpl implements EventService {
         Event event = unionService.getEventOrNotFound(eventId);
 
         if (!user.getId().equals(event.getInitiator().getId())) {
-            throw new ValidationException(String.format("the user %s is not the initiator of the event %s.",userId, eventId));
+            throw new ConflictException(String.format("User %s is not the initiator of the event %s.",userId, eventId));
         }
 
         if (eventUpdateDto.getAnnotation() != null && !eventUpdateDto.getAnnotation().isBlank()) {
@@ -120,6 +127,77 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    public List<RequestDto> getRequestsForEventIdByUserId(Long userId, Long eventId) {
+
+        User user = unionService.getUserOrNotFound(userId);
+        Event event = unionService.getEventOrNotFound(eventId);
+
+        if (!user.getId().equals(event.getInitiator().getId())) {
+            throw new ConflictException(String.format("User %s is not the initiator of the event %s.",userId, eventId));
+        }
+
+        List<Request> requests = requestRepository.findByEventId(eventId);
+
+        return RequestMapper.returnRequestDtoList(requests);
+    }
+
+    @Override
+    @Transactional
+    public RequestUpdateDtoResult updateStatusRequestsForEventIdByUserId(RequestUpdateDtoRequest requestDto, Long userId, Long eventId) {
+
+        User user = unionService.getUserOrNotFound(userId);
+        Event event = unionService.getEventOrNotFound(eventId);
+
+        RequestUpdateDtoResult result = RequestUpdateDtoResult.builder()
+                .confirmedRequests(Collections.emptyList())
+                .rejectedRequests(Collections.emptyList())
+                .build();
+
+        if (!event.getRequestModeration() || event.getParticipantLimit() == 0) {
+            return result;
+        }
+
+        List<Request> confirmedRequests = new ArrayList<>();
+        List<Request> rejectedRequests = new ArrayList<>();
+
+        if (!user.getId().equals(event.getInitiator().getId())) {
+            throw new ConflictException(String.format("User %s is not the initiator of the event %s.",userId, eventId));
+        }
+        if (event.getState() == State.PUBLISHED) {
+            throw new ConflictException(String.format("Event %s has already been published, it is impossible to change it" , eventId));
+        }
+        if (event.getConfirmedRequests() >= event.getParticipantLimit()) {
+            throw new ConflictException("Exceeded the limit of participants");
+        }
+
+        long vacantPlace = event.getParticipantLimit() - event.getConfirmedRequests();
+
+        List<Request> requestsList = requestRepository.findAllById(requestDto.getRequestIds());
+
+        for (Request request : requestsList) {
+            if (!request.getStatus().equals(Status.PENDING)) {
+                throw new ValidationException("Request must have status PENDING");
+            }
+
+            if (requestDto.getStatus().equals(Status.CONFIRMED) && vacantPlace > 0) {
+                request.setStatus(Status.CONFIRMED);
+                confirmedRequests.add(request);
+                vacantPlace--;
+            } else {
+                request.setStatus(Status.REJECTED);
+                rejectedRequests.add(request);
+            }
+        }
+
+        requestRepository.saveAll(requestsList);
+
+        result.setConfirmedRequests(RequestMapper.returnRequestDtoList(confirmedRequests));
+        result.setRejectedRequests(RequestMapper.returnRequestDtoList(rejectedRequests));
+
+        return result;
+    }
+
+    @Override
     @Transactional
     public EventFullDto updateEventByAdmin(EventNewDto eventNewDto, Long eventId) {
         return null;
@@ -129,5 +207,4 @@ public class EventServiceImpl implements EventService {
     public List<EventFullDto> getEventsByAdmin(List<Long> users, List<Long> categories, List<String> states, LocalDateTime startTime, LocalDateTime endTime, Integer from, Integer size) {
         return null;
     }
-
 }

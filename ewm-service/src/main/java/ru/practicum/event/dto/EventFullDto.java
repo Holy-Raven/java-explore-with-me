@@ -6,9 +6,11 @@ import lombok.experimental.FieldDefaults;
 import ru.practicum.user.dto.UserShortDto;
 
 import ru.practicum.category.dto.CategoryDto;
-import ru.practicum.util.State;
+import ru.practicum.util.enums.State;
 
 import java.time.LocalDateTime;
+
+import static ru.practicum.Util.DATE_FORMAT;
 
 @Data
 @Builder
@@ -23,12 +25,12 @@ public class EventFullDto {
 
     Long confirmedRequests;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_FORMAT)
     LocalDateTime createdOn;
 
     String description;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_FORMAT)
     LocalDateTime eventDate;
 
     Long id;
@@ -41,7 +43,7 @@ public class EventFullDto {
 
     Long participantLimit;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_FORMAT)
     LocalDateTime publishedOn;
 
     Boolean requestModeration;

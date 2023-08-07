@@ -2,8 +2,13 @@ package ru.practicum.dto;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
+
+import static ru.practicum.Util.DATE_FORMAT;
 
 @Data
 @Builder
@@ -23,6 +28,7 @@ public class HitDto {
     @NotBlank(message = "ip cannot be empty and consist only of spaces.")
     String ip;
 
-    @NotBlank(message = "timestamp cannot be empty and consist only of spaces.")
-    String timestamp;
+    @NotNull
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_FORMAT)
+    LocalDateTime timestamp;
 }

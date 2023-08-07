@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static ru.practicum.util.State.PENDING;
+import static ru.practicum.util.enums.State.PENDING;
 
 public class EventMapper {
 

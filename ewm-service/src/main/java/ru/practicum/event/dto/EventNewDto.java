@@ -7,6 +7,8 @@ import lombok.experimental.FieldDefaults;
 import javax.validation.constraints.*;
 import java.time.LocalDateTime;
 
+import static ru.practicum.Util.DATE_FORMAT;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -15,20 +17,20 @@ import java.time.LocalDateTime;
 public class EventNewDto {
 
 
-    @NotBlank
+    @NotBlank(message = "annotation cannot be empty and consist only of spaces.")
     @Size(min = 20, max = 2000, message = "annotation must be greater than 20 and less than 2000")
     String annotation;
 
     @NotNull
     Long category;
 
-    @NotBlank
+    @NotBlank(message = "description cannot be empty and consist only of spaces.")
     @Size(min = 20, max = 7000, message = "description must be greater than 20 and less than 7000")
     String description;
 
     @NotNull
     @FutureOrPresent
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_FORMAT)
     LocalDateTime eventDate;
 
     @NotNull
@@ -44,7 +46,7 @@ public class EventNewDto {
     @Builder.Default
     Boolean requestModeration = true;
 
-    @NotBlank
+    @NotBlank(message = "title cannot be empty and consist only of spaces.")
     @Size(min = 3, max = 120, message = "title must be greater than 3 and less than 120")
     String title;
 }
