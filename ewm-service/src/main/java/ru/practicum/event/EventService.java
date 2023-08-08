@@ -20,9 +20,9 @@ public interface EventService {
 
     RequestUpdateDtoResult updateStatusRequestsForEventIdByUserId(RequestUpdateDtoRequest requestDto, Long userId, Long eventId);
 
-    EventFullDto updateEventByAdmin(EventNewDto eventNewDto, Long eventId);
+    EventFullDto updateEventByAdmin(EventUpdateDto eventUpdateDto, Long eventId);
 
-    List<EventFullDto> getEventsByAdmin(List<Long> users, List<Long> categories, List<String> states, LocalDateTime startTime, LocalDateTime endTime, Integer from, Integer size);
+    List<EventFullDto> getEventsByAdmin(List<Long> users, List<String> states, List<Long> categories, LocalDateTime startTime, LocalDateTime endTime, Integer from, Integer size);
 
 
 }

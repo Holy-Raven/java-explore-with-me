@@ -33,13 +33,13 @@ public class RequestServiceImpl implements RequestService {
         Event event = unionService.getEventOrNotFound(eventId);
 
         if (!user.getId().equals(event.getInitiator().getId())) {
-            throw new ConflictException(String.format("user %s is not the initiator of the event %s.",userId, eventId));
+            throw new ConflictException(String.format("User %s is not the initiator of the event %s.",userId, eventId));
         }
         if (event.getParticipantLimit() <= event.getConfirmedRequests() && event.getParticipantLimit() != 0) {
-            throw new ConflictException(String.format("event %s requests exceed the limit", event));
+            throw new ConflictException(String.format("Event %s requests exceed the limit", event));
         }
         if (event.getState() != State.PUBLISHED) {
-            throw new ConflictException(String.format("event %s has not been published, you cannot request participation", eventId));
+            throw new ConflictException(String.format("Event %s has not been published, you cannot request participation", eventId));
         } else {
 
             Request request = Request.builder()

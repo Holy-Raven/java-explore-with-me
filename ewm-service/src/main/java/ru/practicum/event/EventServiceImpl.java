@@ -80,48 +80,7 @@ public class EventServiceImpl implements EventService {
         if (!user.getId().equals(event.getInitiator().getId())) {
             throw new ConflictException(String.format("User %s is not the initiator of the event %s.",userId, eventId));
         }
-
-        if (eventUpdateDto.getAnnotation() != null && !eventUpdateDto.getAnnotation().isBlank()) {
-            event.setAnnotation(eventUpdateDto.getAnnotation());
-        }
-        if (eventUpdateDto.getCategory() != null) {
-            event.setCategory(unionService.getCategoryOrNotFound(eventUpdateDto.getCategory()));
-        }
-        if (eventUpdateDto.getDescription() != null && !eventUpdateDto.getDescription().isBlank()) {
-            event.setDescription(eventUpdateDto.getDescription());
-        }
-        if (eventUpdateDto.getEventDate() != null) {
-            event.setEventDate(eventUpdateDto.getEventDate());
-        }
-        if (eventUpdateDto.getLocation() != null) {
-            event.setLocation(LocationMapper.returnLocation(eventUpdateDto.getLocation()));
-        }
-        if (eventUpdateDto.getPaid() != null) {
-            event.setPaid(eventUpdateDto.getPaid());
-        }
-        if (eventUpdateDto.getParticipantLimit() != null) {
-            event.setParticipantLimit(eventUpdateDto.getParticipantLimit());
-        }
-        if (eventUpdateDto.getRequestModeration() != null) {
-            event.setRequestModeration(eventUpdateDto.getRequestModeration());
-        }
-        if (eventUpdateDto.getStateAction() != null) {
-            if (eventUpdateDto.getStateAction() == StateAction.PUBLISH_EVENT) {
-                event.setState(State.PUBLISHED);
-                event.setPublishedOn(LocalDateTime.now());
-            } else if (eventUpdateDto.getStateAction() == StateAction.REJECT_EVENT ||
-                eventUpdateDto.getStateAction() == StateAction.CANCEL_REVIEW) {
-                event.setState(State.CANCELED);
-            } else if (eventUpdateDto.getStateAction() == StateAction.SEND_TO_REVIEW) {
-                event.setState(State.PENDING);
-            }
-        }
-        if (eventUpdateDto.getTitle() != null && !eventUpdateDto.getTitle().isBlank()) {
-            event.setTitle(eventUpdateDto.getTitle());
-        }
-
-        locationRepository.save(event.getLocation());
-        Event updateEvent = eventRepository.save(event);
+        Event updateEvent = baseUpdateEvent(event, eventUpdateDto);
 
         return EventMapper.returnEventFullDto(updateEvent);
     }
@@ -199,12 +158,77 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    public EventFullDto updateEventByAdmin(EventNewDto eventNewDto, Long eventId) {
-        return null;
+    public EventFullDto updateEventByAdmin(EventUpdateDto eventUpdateDto, Long eventId) {
+
+        Event event = unionService.getEventOrNotFound(eventId);
+        Event updateEvent = baseUpdateEvent(event, eventUpdateDto);
+
+        return EventMapper.returnEventFullDto(updateEvent);
     }
 
     @Override
-    public List<EventFullDto> getEventsByAdmin(List<Long> users, List<Long> categories, List<String> states, LocalDateTime startTime, LocalDateTime endTime, Integer from, Integer size) {
-        return null;
+    public List<EventFullDto> getEventsByAdmin(List<Long> users, List<String> states, List<Long> categories, LocalDateTime startTime, LocalDateTime endTime, Integer from, Integer size) {
+
+        if (startTime == null || endTime == null ) {
+            throw new ValidationException("StartTime and endTime must not be null");
+        }
+        if (!startTime.equals(endTime) && !startTime.isBefore(endTime)) {
+            throw new ValidationException("StartTime should be after the endTime");
+        }
+
+        List<State> statesValue = new ArrayList<>();
+        for (String state : states) {
+            statesValue.add(State.getStateValue(state));
+        }
+
+        PageRequest pageRequest = PageRequest.of(from / size, size);
+        List<Event> events = eventRepository.findEventsByAdminForParam(users, statesValue, categories,  startTime, endTime, pageRequest);
+
+        return EventMapper.returnEventFullDtoList(events);
+    }
+
+    private Event baseUpdateEvent(Event event, EventUpdateDto eventUpdateDto) {
+
+        if (eventUpdateDto.getAnnotation() != null && !eventUpdateDto.getAnnotation().isBlank()) {
+            event.setAnnotation(eventUpdateDto.getAnnotation());
+        }
+        if (eventUpdateDto.getCategory() != null) {
+            event.setCategory(unionService.getCategoryOrNotFound(eventUpdateDto.getCategory()));
+        }
+        if (eventUpdateDto.getDescription() != null && !eventUpdateDto.getDescription().isBlank()) {
+            event.setDescription(eventUpdateDto.getDescription());
+        }
+        if (eventUpdateDto.getEventDate() != null) {
+            event.setEventDate(eventUpdateDto.getEventDate());
+        }
+        if (eventUpdateDto.getLocation() != null) {
+            event.setLocation(LocationMapper.returnLocation(eventUpdateDto.getLocation()));
+        }
+        if (eventUpdateDto.getPaid() != null) {
+            event.setPaid(eventUpdateDto.getPaid());
+        }
+        if (eventUpdateDto.getParticipantLimit() != null) {
+            event.setParticipantLimit(eventUpdateDto.getParticipantLimit());
+        }
+        if (eventUpdateDto.getRequestModeration() != null) {
+            event.setRequestModeration(eventUpdateDto.getRequestModeration());
+        }
+        if (eventUpdateDto.getStateAction() != null) {
+            if (eventUpdateDto.getStateAction() == StateAction.PUBLISH_EVENT) {
+                event.setState(State.PUBLISHED);
+                event.setPublishedOn(LocalDateTime.now());
+            } else if (eventUpdateDto.getStateAction() == StateAction.REJECT_EVENT ||
+                    eventUpdateDto.getStateAction() == StateAction.CANCEL_REVIEW) {
+                event.setState(State.CANCELED);
+            } else if (eventUpdateDto.getStateAction() == StateAction.SEND_TO_REVIEW) {
+                event.setState(State.PENDING);
+            }
+        }
+        if (eventUpdateDto.getTitle() != null && !eventUpdateDto.getTitle().isBlank()) {
+            event.setTitle(eventUpdateDto.getTitle());
+        }
+
+        locationRepository.save(event.getLocation());
+        return eventRepository.save(event);
     }
 }

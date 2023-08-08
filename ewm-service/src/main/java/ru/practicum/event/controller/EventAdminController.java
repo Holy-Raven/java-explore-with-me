@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.event.EventService;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventNewDto;
+import ru.practicum.event.dto.EventUpdateDto;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
@@ -25,26 +26,26 @@ public class EventAdminController {
     @GetMapping
     @ResponseStatus(value = HttpStatus.OK)
     public List<EventFullDto> getEventsByAdmin(@RequestParam(required = false, name = "users") List<Long> users,
-                                               @RequestParam(required = false, name = "categories") List<Long> categories,
                                                @RequestParam(required = false, name = "states") List<String> states,
-                                               @RequestParam(required = false, name = "rangeStart") String start,
-                                               @RequestParam(required = false, name = "rangeEnd") String end,
+                                               @RequestParam(required = false, name = "categories") List<Long> categories,
+                                               @RequestParam(required = false, name = "rangeStart") String rangeStart,
+                                               @RequestParam(required = false, name = "rangeEnd") String rangeEnd,
                                                @RequestParam(required = false, defaultValue = "0") Integer from,
                                                @RequestParam(required = false, defaultValue = "10") Integer size) {
 
-        LocalDateTime startTime = LocalDateTime.parse(start, FORMATTER);
-        LocalDateTime endTime = LocalDateTime.parse(end, FORMATTER);
+        LocalDateTime startTime = LocalDateTime.parse(rangeStart, FORMATTER);
+        LocalDateTime endTime = LocalDateTime.parse(rangeEnd, FORMATTER);
 
-        log.info("Get all events with parameters: users = {}, states = {}, categories = {}, rangeStart = {}, rangeEnd = {}, from = {}, size = {}", users, states, categories, start, end, from, size);
-        return eventService.getEventsByAdmin(users, categories, states, startTime, endTime, from, size);
+        log.info("Get all events with parameters: users = {}, states = {}, categories = {}, rangeStart = {}, rangeEnd = {}, from = {}, size = {}", users, states, categories, startTime, endTime, from, size);
+        return eventService.getEventsByAdmin(users, states, categories, startTime, endTime, from, size);
     }
 
     @PatchMapping("/{eventId}")
     @ResponseStatus(value = HttpStatus.OK)
-    public EventFullDto updateEventByAdmin(@Valid @RequestBody EventNewDto eventNewDto,
+    public EventFullDto updateEventByAdmin(@Valid @RequestBody EventUpdateDto eventUpdateDto,
                                            @PathVariable Long eventId) {
 
-
-        return eventService.updateEventByAdmin(eventNewDto, eventId);
+        log.info("Admin update Event {} ", eventId);
+        return eventService.updateEventByAdmin(eventUpdateDto, eventId);
     }
 }
