@@ -12,7 +12,10 @@ import ru.practicum.request.RequestRepository;
 import ru.practicum.user.User;
 import ru.practicum.user.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
+
+import static ru.practicum.Util.FORMATTER;
 
 @Service
 @RequiredArgsConstructor
@@ -68,6 +71,15 @@ public class UnionServiceImpl implements UnionService {
             throw new NotFoundException(Request.class, "Request id " + requestId + " not found.");
         } else {
             return request.get();
+        }
+    }
+
+    @Override
+    public LocalDateTime parseDate(String date) {
+        if (date != null) {
+            return LocalDateTime.parse(date, FORMATTER);
+        } else {
+            return null;
         }
     }
 }

@@ -32,9 +32,6 @@ public class RequestServiceImpl implements RequestService {
         User user = unionService.getUserOrNotFound(userId);
         Event event = unionService.getEventOrNotFound(eventId);
 
-        if (!user.getId().equals(event.getInitiator().getId())) {
-            throw new ConflictException(String.format("User %s is not the initiator of the event %s.",userId, eventId));
-        }
         if (event.getParticipantLimit() <= event.getConfirmedRequests() && event.getParticipantLimit() != 0) {
             throw new ConflictException(String.format("Event %s requests exceed the limit", event));
         }
@@ -56,6 +53,8 @@ public class RequestServiceImpl implements RequestService {
             }
 
             request = requestRepository.save(request);
+            event.setConfirmedRequests(event.getConfirmedRequests() + 1);
+            eventRepository.save(event);
 
             return RequestMapper.returnRequestDto(request);
         }

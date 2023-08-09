@@ -5,6 +5,8 @@ import ru.practicum.event.model.Event;
 import ru.practicum.request.Request;
 import ru.practicum.user.User;
 
+import java.time.LocalDateTime;
+
 public interface UnionService {
 
     User getUserOrNotFound(Long userId);
@@ -14,4 +16,6 @@ public interface UnionService {
     Event getEventOrNotFound(Long eventId);
 
     Request getRequestOrNotFound(Long requestId);
+
+    LocalDateTime parseDate(String date);
 }

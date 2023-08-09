@@ -6,14 +6,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.event.EventService;
 import ru.practicum.event.dto.EventFullDto;
-import ru.practicum.event.dto.EventNewDto;
 import ru.practicum.event.dto.EventUpdateDto;
 
 import javax.validation.Valid;
-import java.time.LocalDateTime;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
-
-import static ru.practicum.Util.FORMATTER;
 
 @Slf4j
 @RestController
@@ -30,14 +28,11 @@ public class EventAdminController {
                                                @RequestParam(required = false, name = "categories") List<Long> categories,
                                                @RequestParam(required = false, name = "rangeStart") String rangeStart,
                                                @RequestParam(required = false, name = "rangeEnd") String rangeEnd,
-                                               @RequestParam(required = false, defaultValue = "0") Integer from,
-                                               @RequestParam(required = false, defaultValue = "10") Integer size) {
+                                               @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
+                                               @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
 
-        LocalDateTime startTime = LocalDateTime.parse(rangeStart, FORMATTER);
-        LocalDateTime endTime = LocalDateTime.parse(rangeEnd, FORMATTER);
-
-        log.info("Get all events with parameters: users = {}, states = {}, categories = {}, rangeStart = {}, rangeEnd = {}, from = {}, size = {}", users, states, categories, startTime, endTime, from, size);
-        return eventService.getEventsByAdmin(users, states, categories, startTime, endTime, from, size);
+        log.info("Get all events with parameters: users = {}, states = {}, categories = {}, rangeStart = {}, rangeEnd = {}, from = {}, size = {}", users, states, categories, rangeStart, rangeEnd, from, size);
+        return eventService.getEventsByAdmin(users, states, categories, rangeStart, rangeEnd, from, size);
     }
 
     @PatchMapping("/{eventId}")

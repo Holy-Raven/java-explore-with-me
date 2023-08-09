@@ -10,6 +10,7 @@ import ru.practicum.event.dto.*;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.Location;
 import ru.practicum.exception.ConflictException;
+import ru.practicum.exception.NotFoundException;
 import ru.practicum.exception.ValidationException;
 import ru.practicum.request.Request;
 import ru.practicum.request.RequestMapper;
@@ -25,6 +26,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static ru.practicum.util.enums.State.PUBLISHED;
 
 @Slf4j
 @Service
@@ -122,7 +125,7 @@ public class EventServiceImpl implements EventService {
         if (!user.getId().equals(event.getInitiator().getId())) {
             throw new ConflictException(String.format("User %s is not the initiator of the event %s.",userId, eventId));
         }
-        if (event.getState() == State.PUBLISHED) {
+        if (event.getState() == PUBLISHED) {
             throw new ConflictException(String.format("Event %s has already been published, it is impossible to change it" , eventId));
         }
         if (event.getConfirmedRequests() >= event.getParticipantLimit()) {
@@ -167,24 +170,57 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventFullDto> getEventsByAdmin(List<Long> users, List<String> states, List<Long> categories, LocalDateTime startTime, LocalDateTime endTime, Integer from, Integer size) {
+    public List<EventFullDto> getEventsByAdmin(List<Long> users, List<String> states, List<Long> categories, String rangeStart, String rangeEnd, Integer from, Integer size) {
 
-        if (startTime == null || endTime == null ) {
-            throw new ValidationException("StartTime and endTime must not be null");
-        }
-        if (!startTime.equals(endTime) && !startTime.isBefore(endTime)) {
-            throw new ValidationException("StartTime should be after the endTime");
-        }
+        LocalDateTime startTime = unionService.parseDate(rangeStart);
+        LocalDateTime endTime = unionService.parseDate(rangeEnd);
 
         List<State> statesValue = new ArrayList<>();
-        for (String state : states) {
-            statesValue.add(State.getStateValue(state));
+
+        if (states != null) {
+            for (String state : states) {
+                statesValue.add(State.getStateValue(state));
+            }
+        }
+
+        if (startTime != null && endTime != null) {
+            if (startTime.isAfter(endTime)){
+                throw new ValidationException("Start must be after End");
+            }
         }
 
         PageRequest pageRequest = PageRequest.of(from / size, size);
-        List<Event> events = eventRepository.findEventsByAdminForParam(users, statesValue, categories,  startTime, endTime, pageRequest);
+        List<Event> events = eventRepository.findEventsByAdminFromParam(users, statesValue, categories,  startTime, endTime, pageRequest);
 
         return EventMapper.returnEventFullDtoList(events);
+    }
+
+    @Override
+    public EventFullDto getEventById(Long eventId) {
+
+        Event event = unionService.getEventOrNotFound(eventId);
+        if (!event.getState().equals(PUBLISHED)) {
+           throw new NotFoundException(Event.class, String.format("Event %s not published", eventId));
+        }
+        return EventMapper.returnEventFullDto(event);
+    }
+
+    @Override
+    public List<EventShortDto> getEventsByPublic(String text, List<Long> categories, Boolean paid, String rangeStart, String rangeEnd, Boolean onlyAvailable, String sort, Integer from, Integer size) {
+
+        LocalDateTime startTime = unionService.parseDate(rangeStart);
+        LocalDateTime endTime = unionService.parseDate(rangeEnd);
+
+        if (startTime != null && endTime != null) {
+            if (startTime.isAfter(endTime)) {
+                throw new ValidationException("Start must be after End");
+            }
+        }
+
+        PageRequest pageRequest = PageRequest.of(from / size, size);
+        List<Event> events = eventRepository.findEventsByPublicFromParam(text, categories, paid, startTime, endTime, onlyAvailable, sort, pageRequest);
+
+        return EventMapper.returnEventShortDtoList(events);
     }
 
     private Event baseUpdateEvent(Event event, EventUpdateDto eventUpdateDto) {
@@ -215,7 +251,7 @@ public class EventServiceImpl implements EventService {
         }
         if (eventUpdateDto.getStateAction() != null) {
             if (eventUpdateDto.getStateAction() == StateAction.PUBLISH_EVENT) {
-                event.setState(State.PUBLISHED);
+                event.setState(PUBLISHED);
                 event.setPublishedOn(LocalDateTime.now());
             } else if (eventUpdateDto.getStateAction() == StateAction.REJECT_EVENT ||
                     eventUpdateDto.getStateAction() == StateAction.CANCEL_REVIEW) {
