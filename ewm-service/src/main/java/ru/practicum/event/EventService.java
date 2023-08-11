@@ -26,5 +26,4 @@ public interface EventService {
     EventFullDto getEventById(Long eventId);
 
     List<EventShortDto> getEventsByPublic(String text, List<Long> categories, Boolean paid, String startTime, String endTime, Boolean onlyAvailable, String sort, Integer from, Integer size);
-
 }

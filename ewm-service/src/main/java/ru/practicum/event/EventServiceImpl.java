@@ -141,11 +141,12 @@ public class EventServiceImpl implements EventService {
 
         for (Request request : requestsList) {
             if (!request.getStatus().equals(Status.PENDING)) {
-                throw new ValidationException("Request must have status PENDING");
+                throw new ConflictException("Request must have status PENDING");
             }
 
             if (requestDto.getStatus().equals(Status.CONFIRMED) && vacantPlace > 0) {
                 request.setStatus(Status.CONFIRMED);
+                event.setConfirmedRequests(requestRepository.countAllByEventIdAndStatus(eventId, Status.CONFIRMED));
                 confirmedRequests.add(request);
                 vacantPlace--;
             } else {
@@ -157,6 +158,7 @@ public class EventServiceImpl implements EventService {
         result.setConfirmedRequests(RequestMapper.returnRequestDtoList(confirmedRequests));
         result.setRejectedRequests(RequestMapper.returnRequestDtoList(rejectedRequests));
 
+        eventRepository.save(event);
         requestRepository.saveAll(requestsList);
 
         return result;
