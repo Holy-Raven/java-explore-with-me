@@ -8,9 +8,9 @@ public enum StateAction {
     CANCEL_REVIEW,
     SEND_TO_REVIEW;
 
-    public static State getStateActionValue(String stateAction) {
+    public static StateAction getStateActionValue(String stateAction) {
         try {
-            return State.valueOf(stateAction);
+            return StateAction.valueOf(stateAction);
         } catch (Exception e) {
             throw new ValidationException("Unknown stateAction: " + stateAction);
         }

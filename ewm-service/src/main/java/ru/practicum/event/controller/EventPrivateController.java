@@ -61,8 +61,6 @@ public class EventPrivateController {
         return eventService.updateEventByUserId(eventUpdateDto, userId, eventId);
     }
 
-
-
     @GetMapping("/{eventId}/requests")
     @ResponseStatus(value = HttpStatus.OK)
     private List<RequestDto> getRequestsForEventIdByUserId(@PathVariable Long userId,
@@ -74,9 +72,9 @@ public class EventPrivateController {
 
     @PatchMapping("/{eventId}/requests")
     @ResponseStatus(value = HttpStatus.OK)
-    private RequestUpdateDtoResult updateStatusRequestsForEventIdByUserId(@RequestBody @Valid RequestUpdateDtoRequest requestDto,
-                                                                          @PathVariable Long userId,
-                                                                          @PathVariable Long eventId) {
+    private RequestUpdateDtoResult updateStatusRequestsForEventIdByUserId(@PathVariable Long userId,
+                                                                          @PathVariable Long eventId,
+                                                                          @RequestBody RequestUpdateDtoRequest requestDto) {
 
         log.info("Update status request for event id{}, by user id{}.", eventId,  userId);
         return eventService.updateStatusRequestsForEventIdByUserId(requestDto, userId, eventId);

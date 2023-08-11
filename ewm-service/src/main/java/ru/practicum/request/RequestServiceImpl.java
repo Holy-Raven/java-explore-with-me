@@ -35,6 +35,15 @@ public class RequestServiceImpl implements RequestService {
         if (event.getParticipantLimit() <= event.getConfirmedRequests() && event.getParticipantLimit() != 0) {
             throw new ConflictException(String.format("Event %s requests exceed the limit", event));
         }
+
+        if (event.getInitiator().getId().equals(userId)) {
+            throw new ConflictException(String.format("Initiator, user id %s cannot give a request to participate in his event", user.getId()));
+        }
+
+        if (requestRepository.findByRequesterIdAndEventId(userId, eventId).isPresent()) {
+            throw new ConflictException(String.format("You have already applied to participate in Event %s", event.getTitle()));
+        }
+
         if (event.getState() != State.PUBLISHED) {
             throw new ConflictException(String.format("Event %s has not been published, you cannot request participation", eventId));
         } else {
@@ -51,6 +60,7 @@ public class RequestServiceImpl implements RequestService {
                 event.setConfirmedRequests(event.getConfirmedRequests() + 1);
                 eventRepository.save(event);
             }
+
 
             request = requestRepository.save(request);
             event.setConfirmedRequests(event.getConfirmedRequests() + 1);

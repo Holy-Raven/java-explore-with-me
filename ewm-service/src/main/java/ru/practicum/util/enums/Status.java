@@ -9,9 +9,9 @@ public enum Status {
     CANCELED,
     REJECTED;
 
-    public static State getStatusValue(String status) {
+    public static Status getStatusValue(String status) {
         try {
-            return State.valueOf(status);
+            return Status.valueOf(status);
         } catch (Exception e) {
             throw new ValidationException("Unknown status: " + status);
         }

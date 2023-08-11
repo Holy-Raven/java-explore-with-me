@@ -83,6 +83,11 @@ public class EventServiceImpl implements EventService {
         if (!user.getId().equals(event.getInitiator().getId())) {
             throw new ConflictException(String.format("User %s is not the initiator of the event %s.",userId, eventId));
         }
+
+        if (event.getState().equals(PUBLISHED)) {
+            throw new ConflictException(String.format("User %s cannot update event %s that has already been published.",userId, eventId));
+        }
+
         Event updateEvent = baseUpdateEvent(event, eventUpdateDto);
 
         return EventMapper.returnEventFullDto(updateEvent);
@@ -115,20 +120,20 @@ public class EventServiceImpl implements EventService {
                 .rejectedRequests(Collections.emptyList())
                 .build();
 
-        if (!event.getRequestModeration() || event.getParticipantLimit() == 0) {
-            return result;
-        }
-
-        List<Request> confirmedRequests = new ArrayList<>();
-        List<Request> rejectedRequests = new ArrayList<>();
-
         if (!user.getId().equals(event.getInitiator().getId())) {
             throw new ConflictException(String.format("User %s is not the initiator of the event %s.",userId, eventId));
+        }
+
+        if (!event.getRequestModeration() || event.getParticipantLimit() == 0) {
+            return result;
         }
 
         if (event.getConfirmedRequests() >= event.getParticipantLimit()) {
             throw new ConflictException("Exceeded the limit of participants");
         }
+
+        List<Request> confirmedRequests = new ArrayList<>();
+        List<Request> rejectedRequests = new ArrayList<>();
 
         long vacantPlace = event.getParticipantLimit() - event.getConfirmedRequests();
 
@@ -162,6 +167,25 @@ public class EventServiceImpl implements EventService {
     public EventFullDto updateEventByAdmin(EventUpdateDto eventUpdateDto, Long eventId) {
 
         Event event = unionService.getEventOrNotFound(eventId);
+
+        if (eventUpdateDto.getStateAction() != null) {
+            if (eventUpdateDto.getStateAction().equals(StateAction.PUBLISH_EVENT)) {
+
+                if (!event.getState().equals(State.PENDING)) {
+                    throw new ConflictException(String.format("Event - %s, has already been published, cannot be published again ", event.getTitle()));
+                }
+                event.setPublishedOn(LocalDateTime.now());
+                event.setState(State.PUBLISHED);
+
+            } else {
+
+                if (!event.getState().equals(State.PENDING)) {
+                    throw new ConflictException(String.format("Event - %s, cannot be canceled because its statute is not \"PENDING\"", event.getTitle()));
+                }
+                event.setState(State.CANCELED);
+            }
+        }
+
         Event updateEvent = baseUpdateEvent(event, eventUpdateDto);
 
         return EventMapper.returnEventFullDto(updateEvent);
