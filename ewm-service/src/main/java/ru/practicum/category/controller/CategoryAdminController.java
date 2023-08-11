@@ -8,7 +8,6 @@ import ru.practicum.category.CategoryService;
 import ru.practicum.category.dto.CategoryDto;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Positive;
 
 @Slf4j
 @RestController
@@ -20,7 +19,7 @@ public class CategoryAdminController {
 
     @PostMapping
     @ResponseStatus(value = HttpStatus.CREATED)
-    public CategoryDto createCategory(@Valid @RequestBody CategoryDto categoryDto) {
+    public CategoryDto addCategory(@Valid @RequestBody CategoryDto categoryDto) {
 
         log.info("Add Category {} ", categoryDto.getName());
         return categoryService.addCategory(categoryDto);
@@ -28,8 +27,8 @@ public class CategoryAdminController {
 
     @PatchMapping("/{catId}")
     @ResponseStatus(value = HttpStatus.OK)
-    public CategoryDto updateCategory(@Positive @PathVariable("catId") Long categoryId,
-                                      @Valid @RequestBody CategoryDto categoryDto) {
+    public CategoryDto updateCategory(@Valid @RequestBody CategoryDto categoryDto,
+                                      @PathVariable("catId") Long categoryId) {
 
         log.info("Update Category {} ", categoryDto.getName());
         return categoryService.updateCategory(categoryDto, categoryId);
@@ -37,7 +36,7 @@ public class CategoryAdminController {
 
     @DeleteMapping("/{catId}")
     @ResponseStatus(value = HttpStatus.NO_CONTENT)
-    public void deleteCategory(@Positive @PathVariable("catId") Long categoryId) {
+    public void deleteCategory(@PathVariable("catId") Long categoryId) {
 
         log.info("Delete Category {} ", categoryId);
         categoryService.deleteCategory(categoryId);

@@ -58,7 +58,7 @@ public class EventServiceImpl implements EventService {
 
         unionService.getUserOrNotFound(userId);
         PageRequest pageRequest = PageRequest.of(from / size, size);
-        List<Event> events = eventRepository.findAllByInitiatorId(userId, pageRequest);
+        List<Event> events = eventRepository.findByInitiatorId(userId, pageRequest);
 
         return EventMapper.returnEventShortDtoList(events);
     }
@@ -125,9 +125,7 @@ public class EventServiceImpl implements EventService {
         if (!user.getId().equals(event.getInitiator().getId())) {
             throw new ConflictException(String.format("User %s is not the initiator of the event %s.",userId, eventId));
         }
-        if (event.getState() == PUBLISHED) {
-            throw new ConflictException(String.format("Event %s has already been published, it is impossible to change it" , eventId));
-        }
+
         if (event.getConfirmedRequests() >= event.getParticipantLimit()) {
             throw new ConflictException("Exceeded the limit of participants");
         }
@@ -151,10 +149,10 @@ public class EventServiceImpl implements EventService {
             }
         }
 
-        requestRepository.saveAll(requestsList);
-
         result.setConfirmedRequests(RequestMapper.returnRequestDtoList(confirmedRequests));
         result.setRejectedRequests(RequestMapper.returnRequestDtoList(rejectedRequests));
+
+        requestRepository.saveAll(requestsList);
 
         return result;
     }

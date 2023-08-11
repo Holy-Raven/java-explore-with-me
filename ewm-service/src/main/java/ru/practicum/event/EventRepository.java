@@ -10,13 +10,18 @@ import ru.practicum.util.enums.State;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
 
-    List<Event> findAllByInitiatorId(Long initiatorId, PageRequest pageRequest);
+    List<Event> findByInitiatorId(Long initiatorId, PageRequest pageRequest);
 
     Event findByInitiatorIdAndId(Long initiatorId, Long eventId);
+
+    List<Event> findByCategoryId(Long categoryId);
+
+    Set<Event> findByIdIn (Set<Long> events);
 
     @Query(value = "SELECT e FROM Event AS e " +
             "WHERE (:users IS NULL OR e.initiator.id IN :users) " +

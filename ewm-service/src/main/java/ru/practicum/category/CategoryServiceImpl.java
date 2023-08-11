@@ -5,6 +5,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.category.dto.CategoryDto;
+import ru.practicum.event.EventRepository;
+import ru.practicum.exception.ConflictException;
 import ru.practicum.util.UnionService;
 
 import java.util.List;
@@ -15,6 +17,7 @@ import java.util.List;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final EventRepository eventRepository;
     private final UnionService unionService;
 
     @Transactional
@@ -43,6 +46,11 @@ public class CategoryServiceImpl implements CategoryService {
     public void deleteCategory(Long categoryId) {
 
         unionService.getCategoryOrNotFound(categoryId);
+
+        if (!eventRepository.findByCategoryId(categoryId).isEmpty()){
+            throw new ConflictException("This category is used and cannot be deleted");
+        }
+
         categoryRepository.deleteById(categoryId);
     }
 

@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.category.Category;
 import ru.practicum.category.CategoryRepository;
+import ru.practicum.compilation.Compilation;
+import ru.practicum.compilation.CompilationRepository;
 import ru.practicum.event.EventRepository;
 import ru.practicum.event.model.Event;
 import ru.practicum.exception.NotFoundException;
@@ -25,6 +27,7 @@ public class UnionServiceImpl implements UnionService {
     private final CategoryRepository categoryRepository;
     private final EventRepository eventRepository;
     private final RequestRepository requestRepository;
+    private final CompilationRepository compilationRepository;
 
     @Override
     public User getUserOrNotFound(Long userId) {
@@ -71,6 +74,18 @@ public class UnionServiceImpl implements UnionService {
             throw new NotFoundException(Request.class, "Request id " + requestId + " not found.");
         } else {
             return request.get();
+        }
+    }
+
+    @Override
+    public Compilation getCompilationOrNotFound(Long compId) {
+
+        Optional<Compilation> compilation = compilationRepository.findById(compId);
+
+        if (compilation.isEmpty()) {
+            throw new NotFoundException(Compilation.class, "Compilation id " + compId + " not found.");
+        } else {
+            return compilation.get();
         }
     }
 
