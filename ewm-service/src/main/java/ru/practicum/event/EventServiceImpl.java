@@ -1,11 +1,17 @@
 package ru.practicum.event;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.StatsClient;
 import ru.practicum.category.Category;
+import ru.practicum.dto.HitDto;
+import ru.practicum.dto.StatsDto;
 import ru.practicum.event.dto.*;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.Location;
@@ -22,10 +28,9 @@ import ru.practicum.util.enums.StateAction;
 import ru.practicum.util.UnionService;
 import ru.practicum.util.enums.Status;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static ru.practicum.util.enums.State.PUBLISHED;
 
@@ -39,6 +44,9 @@ public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     private final RequestRepository requestRepository;
     private final LocationRepository locationRepository;
+    private final StatsClient client;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
 
     @Override
     @Transactional
@@ -54,21 +62,31 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventShortDto> getAllEventsByUserId(Long userId, Integer from, Integer size) {
+    public List<EventShortDto> getAllEventsByUserId(Long userId, Integer from, Integer size, HttpServletRequest request) {
 
         unionService.getUserOrNotFound(userId);
         PageRequest pageRequest = PageRequest.of(from / size, size);
         List<Event> events = eventRepository.findByInitiatorId(userId, pageRequest);
 
+        for (Event event : events) {
+            sendInfo(request);
+            event.setViews(getViewsEventById(event.getId()));
+            eventRepository.save(event);
+        }
+
         return EventMapper.returnEventShortDtoList(events);
     }
 
     @Override
-    public EventFullDto getUserEventById(Long userId, Long eventId) {
+    public EventFullDto getUserEventById(Long userId, Long eventId, HttpServletRequest request) {
 
         unionService.getUserOrNotFound(userId);
         unionService.getEventOrNotFound(eventId);
         Event event = eventRepository.findByInitiatorIdAndId(userId,eventId);
+
+        sendInfo(request);
+        event.setViews(getViewsEventById(event.getId()));
+        eventRepository.save(event);
 
         return EventMapper.returnEventFullDto(event);
     }
@@ -83,7 +101,6 @@ public class EventServiceImpl implements EventService {
         if (!user.getId().equals(event.getInitiator().getId())) {
             throw new ConflictException(String.format("User %s is not the initiator of the event %s.",userId, eventId));
         }
-
         if (event.getState().equals(PUBLISHED)) {
             throw new ConflictException(String.format("User %s cannot update event %s that has already been published.",userId, eventId));
         }
@@ -194,7 +211,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventFullDto> getEventsByAdmin(List<Long> users, List<String> states, List<Long> categories, String rangeStart, String rangeEnd, Integer from, Integer size) {
+    public List<EventFullDto> getEventsByAdmin(List<Long> users, List<String> states, List<Long> categories, String rangeStart, String rangeEnd, Integer from, Integer size, HttpServletRequest request) {
 
         LocalDateTime startTime = unionService.parseDate(rangeStart);
         LocalDateTime endTime = unionService.parseDate(rangeEnd);
@@ -216,21 +233,32 @@ public class EventServiceImpl implements EventService {
         PageRequest pageRequest = PageRequest.of(from / size, size);
         List<Event> events = eventRepository.findEventsByAdminFromParam(users, statesValue, categories,  startTime, endTime, pageRequest);
 
+        for (Event event : events) {
+            sendInfo(request);
+            event.setViews(getViewsEventById(event.getId()));
+            eventRepository.save(event);
+        }
+
         return EventMapper.returnEventFullDtoList(events);
     }
 
     @Override
-    public EventFullDto getEventById(Long eventId) {
+    public EventFullDto getEventById(Long eventId, HttpServletRequest request) {
 
         Event event = unionService.getEventOrNotFound(eventId);
         if (!event.getState().equals(PUBLISHED)) {
            throw new NotFoundException(Event.class, String.format("Event %s not published", eventId));
         }
+
+        sendInfo(request);
+        event.setViews(getViewsEventById(event.getId()));
+        eventRepository.save(event);
+
         return EventMapper.returnEventFullDto(event);
     }
 
     @Override
-    public List<EventShortDto> getEventsByPublic(String text, List<Long> categories, Boolean paid, String rangeStart, String rangeEnd, Boolean onlyAvailable, String sort, Integer from, Integer size) {
+    public List<EventShortDto> getEventsByPublic(String text, List<Long> categories, Boolean paid, String rangeStart, String rangeEnd, Boolean onlyAvailable, String sort, Integer from, Integer size, HttpServletRequest request) {
 
         LocalDateTime startTime = unionService.parseDate(rangeStart);
         LocalDateTime endTime = unionService.parseDate(rangeEnd);
@@ -243,6 +271,12 @@ public class EventServiceImpl implements EventService {
 
         PageRequest pageRequest = PageRequest.of(from / size, size);
         List<Event> events = eventRepository.findEventsByPublicFromParam(text, categories, paid, startTime, endTime, onlyAvailable, sort, pageRequest);
+
+        for (Event event : events) {
+            sendInfo(request);
+            event.setViews(getViewsEventById(event.getId()));
+            eventRepository.save(event);
+        }
 
         return EventMapper.returnEventShortDtoList(events);
     }
@@ -290,5 +324,28 @@ public class EventServiceImpl implements EventService {
 
         locationRepository.save(event.getLocation());
         return eventRepository.save(event);
+    }
+
+    private void sendInfo(HttpServletRequest request) {
+        HitDto hitDto = HitDto.builder()
+                .app("ewm-service")
+                .uri(request.getRequestURI())
+                .ip(request.getRemoteAddr())
+                .timestamp(LocalDateTime.now())
+                .build();
+        client.addHit(hitDto);
+    }
+
+    private Long getViewsEventById(Long eventId) {
+
+        String uri = "/events/" + eventId;
+        ResponseEntity<Object> response = client.findStats(LocalDateTime.of(1970, 1, 1, 0, 0), LocalDateTime.now(), uri, true);
+        List<StatsDto> result = objectMapper.convertValue(response.getBody(), new TypeReference<>() {});
+
+        if (result.isEmpty()) {
+            return 0L;
+        } else {
+            return result.get(0).getHits();
+        }
     }
 }

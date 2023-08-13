@@ -3,15 +3,16 @@ package ru.practicum.event;
 import ru.practicum.event.dto.*;
 import ru.practicum.request.dto.RequestDto;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public interface EventService {
 
     EventFullDto addEvent(Long userId, EventNewDto eventnewDto);
 
-    List<EventShortDto> getAllEventsByUserId(Long userId, Integer from, Integer size);
+    List<EventShortDto> getAllEventsByUserId(Long userId, Integer from, Integer size, HttpServletRequest request);
 
-    EventFullDto getUserEventById(Long userId, Long eventId);
+    EventFullDto getUserEventById(Long userId, Long eventId, HttpServletRequest request);
 
     EventFullDto updateEventByUserId(EventUpdateDto eventUpdateDto, Long userId, Long eventId);
 
@@ -21,9 +22,9 @@ public interface EventService {
 
     EventFullDto updateEventByAdmin(EventUpdateDto eventUpdateDto, Long eventId);
 
-    List<EventFullDto> getEventsByAdmin(List<Long> users, List<String> states, List<Long> categories, String startTime, String endTime, Integer from, Integer size);
+    List<EventFullDto> getEventsByAdmin(List<Long> users, List<String> states, List<Long> categories, String startTime, String endTime, Integer from, Integer size, HttpServletRequest request);
 
-    EventFullDto getEventById(Long eventId);
+    EventFullDto getEventById(Long eventId, HttpServletRequest request);
 
-    List<EventShortDto> getEventsByPublic(String text, List<Long> categories, Boolean paid, String startTime, String endTime, Boolean onlyAvailable, String sort, Integer from, Integer size);
+    List<EventShortDto> getEventsByPublic(String text, List<Long> categories, Boolean paid, String startTime, String endTime, Boolean onlyAvailable, String sort, Integer from, Integer size, HttpServletRequest request);
 }

@@ -9,6 +9,7 @@ import ru.practicum.event.EventService;
 import ru.practicum.event.dto.*;
 import ru.practicum.request.dto.RequestDto;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
@@ -36,19 +37,21 @@ public class EventPrivateController {
     @ResponseStatus(value = HttpStatus.OK)
     public List<EventShortDto> getAllEventsByUserId(@PathVariable Long userId,
                                                     @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
-                                                    @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
+                                                    @Positive @RequestParam(name = "size", defaultValue = "10") Integer size,
+                                                    HttpServletRequest request) {
 
         log.info("List events for User Id {}. Where from = {}, size = {}", userId, from, size);
-        return eventService.getAllEventsByUserId(userId, from, size);
+        return eventService.getAllEventsByUserId(userId, from, size, request);
     }
 
     @GetMapping("/{eventId}")
     @ResponseStatus(value = HttpStatus.OK)
     public EventFullDto getUserEventById(@PathVariable Long userId,
-                                         @PathVariable Long eventId) {
+                                         @PathVariable Long eventId,
+                                         HttpServletRequest request) {
 
         log.info("Get Event id {}, for User id {} ", eventId, userId);
-        return eventService.getUserEventById(userId, eventId);
+        return eventService.getUserEventById(userId, eventId, request);
     }
 
     @PatchMapping("/{eventId}")

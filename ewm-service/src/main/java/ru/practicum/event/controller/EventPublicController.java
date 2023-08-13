@@ -8,6 +8,7 @@ import ru.practicum.event.EventService;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
@@ -30,17 +31,18 @@ public class EventPublicController {
                                                  @RequestParam(required = false, defaultValue = "false", name = "onlyAvailable") Boolean onlyAvailable,
                                                  @RequestParam(required = false, name = "sort") String sort,
                                                  @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
-                                                 @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
+                                                 @Positive @RequestParam(name = "size", defaultValue = "10") Integer size,
+                                                 HttpServletRequest request) {
 
         log.info("Get all events for public witch short info from parameters: text = {}, categories = {}, paid = {}, rangeStart = {}, rangeEnd = {}, onlyAvailable = {}, sort= {}, from = {}, size = {}",
                 text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
-        return eventService.getEventsByPublic(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
+        return eventService.getEventsByPublic(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size, request);
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(value =HttpStatus.OK)
-    public EventFullDto getEventById(@PathVariable Long id) {
+    public EventFullDto getEventById(@PathVariable Long id, HttpServletRequest request) {
 
-        return eventService.getEventById(id);
+        return eventService.getEventById(id, request);
     }
 }
