@@ -2,7 +2,7 @@ version: '3.1'
 
 services:
 
-  stats-service:
+  stats-server:
     build: stats-service/server
     image: stats-service-image
     container_name: stats-service-container
@@ -37,7 +37,7 @@ services:
       - ewm-db
     environment:
       - spring_datasource_url=jdbc:postgresql://ewm-db:5432/ewm-server-db
-      - stats-server.url=http://stats-service:9090
+      - stats-server.url=http://stats-server:9090
       - spring.datasource.user=root
       - spring.datasource.password=root
 #      - TZ=Europe/Moscow
