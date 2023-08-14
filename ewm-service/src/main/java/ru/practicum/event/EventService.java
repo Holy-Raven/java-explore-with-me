@@ -10,9 +10,9 @@ public interface EventService {
 
     EventFullDto addEvent(Long userId, EventNewDto eventnewDto);
 
-    List<EventShortDto> getAllEventsByUserId(Long userId, Integer from, Integer size, HttpServletRequest request);
+    List<EventShortDto> getAllEventsByUserId(Long userId, Integer from, Integer size);
 
-    EventFullDto getUserEventById(Long userId, Long eventId, HttpServletRequest request);
+    EventFullDto getUserEventById(Long userId, Long eventId);
 
     EventFullDto updateEventByUserId(EventUpdateDto eventUpdateDto, Long userId, Long eventId);
 
@@ -22,7 +22,7 @@ public interface EventService {
 
     EventFullDto updateEventByAdmin(EventUpdateDto eventUpdateDto, Long eventId);
 
-    List<EventFullDto> getEventsByAdmin(List<Long> users, List<String> states, List<Long> categories, String startTime, String endTime, Integer from, Integer size, HttpServletRequest request);
+    List<EventFullDto> getEventsByAdmin(List<Long> users, List<String> states, List<Long> categories, String startTime, String endTime, Integer from, Integer size);
 
     EventFullDto getEventById(Long eventId, HttpServletRequest request);
 

@@ -37,21 +37,19 @@ public class EventPrivateController {
     @ResponseStatus(value = HttpStatus.OK)
     public List<EventShortDto> getAllEventsByUserId(@PathVariable Long userId,
                                                     @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
-                                                    @Positive @RequestParam(name = "size", defaultValue = "10") Integer size,
-                                                    HttpServletRequest request) {
+                                                    @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
 
         log.info("List events for User Id {}. Where from = {}, size = {}", userId, from, size);
-        return eventService.getAllEventsByUserId(userId, from, size, request);
+        return eventService.getAllEventsByUserId(userId, from, size);
     }
 
     @GetMapping("/{eventId}")
     @ResponseStatus(value = HttpStatus.OK)
     public EventFullDto getUserEventById(@PathVariable Long userId,
-                                         @PathVariable Long eventId,
-                                         HttpServletRequest request) {
+                                         @PathVariable Long eventId) {
 
         log.info("Get Event id {}, for User id {} ", eventId, userId);
-        return eventService.getUserEventById(userId, eventId, request);
+        return eventService.getUserEventById(userId, eventId);
     }
 
     @PatchMapping("/{eventId}")

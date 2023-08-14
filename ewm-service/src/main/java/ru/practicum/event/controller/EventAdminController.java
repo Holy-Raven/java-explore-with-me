@@ -30,11 +30,10 @@ public class EventAdminController {
                                                @RequestParam(required = false, name = "rangeStart") String rangeStart,
                                                @RequestParam(required = false, name = "rangeEnd") String rangeEnd,
                                                @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
-                                               @Positive @RequestParam(name = "size", defaultValue = "10") Integer size,
-                                               HttpServletRequest request) {
+                                               @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
 
         log.info("Get all events with parameters: users = {}, states = {}, categories = {}, rangeStart = {}, rangeEnd = {}, from = {}, size = {}", users, states, categories, rangeStart, rangeEnd, from, size);
-        return eventService.getEventsByAdmin(users, states, categories, rangeStart, rangeEnd, from, size, request);
+        return eventService.getEventsByAdmin(users, states, categories, rangeStart, rangeEnd, from, size);
     }
 
     @PatchMapping("/{eventId}")

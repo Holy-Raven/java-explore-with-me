@@ -62,31 +62,21 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventShortDto> getAllEventsByUserId(Long userId, Integer from, Integer size, HttpServletRequest request) {
+    public List<EventShortDto> getAllEventsByUserId(Long userId, Integer from, Integer size) {
 
         unionService.getUserOrNotFound(userId);
         PageRequest pageRequest = PageRequest.of(from / size, size);
         List<Event> events = eventRepository.findByInitiatorId(userId, pageRequest);
 
-        for (Event event : events) {
-            sendInfo(request);
-            event.setViews(getViewsEventById(event.getId()));
-            eventRepository.save(event);
-        }
-
         return EventMapper.returnEventShortDtoList(events);
     }
 
     @Override
-    public EventFullDto getUserEventById(Long userId, Long eventId, HttpServletRequest request) {
+    public EventFullDto getUserEventById(Long userId, Long eventId) {
 
         unionService.getUserOrNotFound(userId);
         unionService.getEventOrNotFound(eventId);
         Event event = eventRepository.findByInitiatorIdAndId(userId,eventId);
-
-        sendInfo(request);
-        event.setViews(getViewsEventById(event.getId()));
-        eventRepository.save(event);
 
         return EventMapper.returnEventFullDto(event);
     }
@@ -211,7 +201,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventFullDto> getEventsByAdmin(List<Long> users, List<String> states, List<Long> categories, String rangeStart, String rangeEnd, Integer from, Integer size, HttpServletRequest request) {
+    public List<EventFullDto> getEventsByAdmin(List<Long> users, List<String> states, List<Long> categories, String rangeStart, String rangeEnd, Integer from, Integer size) {
 
         LocalDateTime startTime = unionService.parseDate(rangeStart);
         LocalDateTime endTime = unionService.parseDate(rangeEnd);
@@ -232,12 +222,6 @@ public class EventServiceImpl implements EventService {
 
         PageRequest pageRequest = PageRequest.of(from / size, size);
         List<Event> events = eventRepository.findEventsByAdminFromParam(users, statesValue, categories,  startTime, endTime, pageRequest);
-
-        for (Event event : events) {
-            sendInfo(request);
-            event.setViews(getViewsEventById(event.getId()));
-            eventRepository.save(event);
-        }
 
         return EventMapper.returnEventFullDtoList(events);
     }
@@ -272,8 +256,8 @@ public class EventServiceImpl implements EventService {
         PageRequest pageRequest = PageRequest.of(from / size, size);
         List<Event> events = eventRepository.findEventsByPublicFromParam(text, categories, paid, startTime, endTime, onlyAvailable, sort, pageRequest);
 
+        sendInfo(request);
         for (Event event : events) {
-            sendInfo(request);
             event.setViews(getViewsEventById(event.getId()));
             eventRepository.save(event);
         }

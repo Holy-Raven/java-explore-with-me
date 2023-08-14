@@ -33,11 +33,12 @@ public class HitController {
     public List<StatsDto> getStats(@RequestParam("start") String start,
                                    @RequestParam("end") String end,
                                    @RequestParam(required = false) List<String> uris,
-                                   @RequestParam(defaultValue = "false", required = false) Boolean unique) {
+                                   @RequestParam(required = false, defaultValue = "false") Boolean unique) {
 
         LocalDateTime startTime = LocalDateTime.parse(start, FORMATTER);
         LocalDateTime endTime = LocalDateTime.parse(end, FORMATTER);
 
+        log.info("Get stats");
         return hitService.getStats(startTime, endTime, uris, unique);
     }
 }
