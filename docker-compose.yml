@@ -4,19 +4,21 @@ services:
 
   stats-service:
     build: stats-service/server
-    image: stats-service
-    container_name: stats-service
+    image: stats-service-image
+    container_name: stats-service-container
     ports:
       - "9090:9090"
     depends_on:
       - stats-db
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats-server-db
+      - spring_datasource_url=jdbc:postgresql://stats-db:5432/stats-server-db
+      - spring.datasource.user=root
+      - spring.datasource.password=root
 #      - TZ=Europe/Moscow
 
   stats-db:
     image: postgres:14.3-alpine
-    container_name: stats-db
+    container_name: stats-db-container
     ports:
       - "6541:5432"
     environment:
@@ -27,21 +29,24 @@ services:
 
   ewm-service:
     build: ewm-service
-    image: ewm-service
-    container_name: ewm-service
+    image: ewm-service-image
+    container_name: ewm-service-container
     ports:
       - "8080:8080"
     depends_on:
       - ewm-db
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/ewm-server-db
+      - spring_datasource_url=jdbc:postgresql://ewm-db:5432/ewm-server-db
+      - stats-server.url=http://stats-service:9090
+      - spring.datasource.user=root
+      - spring.datasource.password=root
 #      - TZ=Europe/Moscow
 
   ewm-db:
     image: postgres:14.3-alpine
-    container_name: ewm-db
+    container_name: ewm-db-container
     ports:
-      - "6542:5433"
+      - "6542:5432"
     environment:
       - POSTGRES_DB=ewm-server-db
       - POSTGRES_USER=root
