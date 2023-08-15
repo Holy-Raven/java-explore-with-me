@@ -9,10 +9,8 @@ import ru.practicum.compilation.dto.CompilationDto;
 import ru.practicum.compilation.dto.CompilationNewDto;
 import ru.practicum.compilation.dto.CompilationUpdateDto;
 import ru.practicum.event.EventRepository;
-import ru.practicum.exception.ValidationException;
 import ru.practicum.util.UnionService;
 
-import javax.validation.constraints.Positive;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

@@ -215,7 +215,7 @@ public class EventServiceImpl implements EventService {
         }
 
         if (startTime != null && endTime != null) {
-            if (startTime.isAfter(endTime)){
+            if (startTime.isAfter(endTime)) {
                 throw new ValidationException("Start must be after End");
             }
         }

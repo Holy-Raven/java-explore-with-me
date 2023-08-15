@@ -9,7 +9,6 @@ import ru.practicum.event.EventService;
 import ru.practicum.event.dto.*;
 import ru.practicum.request.dto.RequestDto;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;

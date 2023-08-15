@@ -21,7 +21,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     List<Event> findByCategoryId(Long categoryId);
 
-    Set<Event> findByIdIn (Set<Long> events);
+    Set<Event> findByIdIn(Set<Long> events);
 
     @Query(value = "SELECT e FROM Event AS e " +
             "WHERE (:users IS NULL OR e.initiator.id IN :users) " +
@@ -51,7 +51,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "OR (CAST(:rangeStart AS date) IS NULL AND CAST(:rangeStart AS date) IS NULL)" +
             "OR (CAST(:rangeStart AS date) IS NULL AND e.eventDate < CAST(:rangeEnd AS date)) " +
             "OR (CAST(:rangeEnd AS date) IS NULL AND e.eventDate > CAST(:rangeStart AS date)) " +
-            "AND (e.confirmedRequests < e.participantLimit OR :onlyAvailable = FALSE)"+
+            "AND (e.confirmedRequests < e.participantLimit OR :onlyAvailable = FALSE)" +
             "GROUP BY e.id " +
             "ORDER BY LOWER(:sort) ASC")
 

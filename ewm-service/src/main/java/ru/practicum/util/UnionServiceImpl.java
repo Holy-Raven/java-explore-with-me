@@ -46,7 +46,7 @@ public class UnionServiceImpl implements UnionService {
 
         Optional<Category> category = categoryRepository.findById(categoryId);
 
-        if (category.isEmpty()){
+        if (category.isEmpty()) {
             throw new NotFoundException(Category.class, "Category id " + categoryId + " not found.");
         } else {
             return category.get();
@@ -58,7 +58,7 @@ public class UnionServiceImpl implements UnionService {
 
         Optional<Event> event = eventRepository.findById(eventId);
 
-        if (event.isEmpty()){
+        if (event.isEmpty()) {
             throw new NotFoundException(Event.class, "Event id " + eventId + " not found.");
         } else {
             return event.get();

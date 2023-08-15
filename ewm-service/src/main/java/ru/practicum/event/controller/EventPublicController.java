@@ -16,13 +16,13 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(path ="/events")
+@RequestMapping(path = "/events")
 public class EventPublicController {
 
     public final EventService eventService;
 
     @GetMapping
-    @ResponseStatus(value =HttpStatus.OK)
+    @ResponseStatus(value = HttpStatus.OK)
     public List<EventShortDto> getEventsByPublic(@RequestParam(required = false, name = "text") String text,
                                                  @RequestParam(required = false, name = "categories") List<Long> categories,
                                                  @RequestParam(required = false, name = "paid") Boolean paid,
@@ -40,7 +40,7 @@ public class EventPublicController {
     }
 
     @GetMapping("/{id}")
-    @ResponseStatus(value =HttpStatus.OK)
+    @ResponseStatus(value = HttpStatus.OK)
     public EventFullDto getEventById(@PathVariable Long id, HttpServletRequest request) {
 
         return eventService.getEventById(id, request);
