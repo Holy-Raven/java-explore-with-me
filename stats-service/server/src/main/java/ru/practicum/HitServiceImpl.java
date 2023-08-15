@@ -30,7 +30,7 @@ public class HitServiceImpl implements HitService {
     public List<StatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
 
         if (start != null && end != null) {
-            if (start.isAfter(end)){
+            if (start.isAfter(end)) {
                 throw new StatsValidationException("Start must be after End");
             }
         }
