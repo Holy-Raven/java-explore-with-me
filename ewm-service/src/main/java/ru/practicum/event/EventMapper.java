@@ -1,5 +1,6 @@
 package ru.practicum.event;
 
+import lombok.experimental.UtilityClass;
 import ru.practicum.category.Category;
 import ru.practicum.category.CategoryMapper;
 import ru.practicum.event.dto.EventFullDto;
@@ -16,9 +17,10 @@ import java.util.List;
 
 import static ru.practicum.util.enums.State.PENDING;
 
+@UtilityClass
 public class EventMapper {
 
-    public static Event returnEvent(EventNewDto eventNewDto, Category category, Location location, User user) {
+    public Event returnEvent(EventNewDto eventNewDto, Category category, Location location, User user) {
         Event event = Event.builder()
                 .annotation(eventNewDto.getAnnotation())
                 .category(category)
@@ -38,7 +40,7 @@ public class EventMapper {
         return event;
     }
 
-    public static EventFullDto returnEventFullDto(Event event) {
+    public EventFullDto returnEventFullDto(Event event) {
         EventFullDto eventFullDto = EventFullDto.builder()
                 .annotation(event.getAnnotation())
                 .category(CategoryMapper.returnCategoryDto(event.getCategory()))
@@ -60,7 +62,7 @@ public class EventMapper {
         return eventFullDto;
     }
 
-    public static EventShortDto returnEventShortDto(Event event) {
+    public EventShortDto returnEventShortDto(Event event) {
 
         EventShortDto eventShortDto = EventShortDto.builder()
                 .annotation(event.getAnnotation())
@@ -76,7 +78,7 @@ public class EventMapper {
         return eventShortDto;
     }
 
-    public static List<EventFullDto> returnEventFullDtoList(Iterable<Event> events) {
+    public List<EventFullDto> returnEventFullDtoList(Iterable<Event> events) {
         List<EventFullDto> result = new ArrayList<>();
 
         for (Event event : events) {
@@ -85,7 +87,7 @@ public class EventMapper {
         return result;
     }
 
-    public static List<EventShortDto> returnEventShortDtoList(Iterable<Event> events) {
+    public List<EventShortDto> returnEventShortDtoList(Iterable<Event> events) {
         List<EventShortDto> result = new ArrayList<>();
 
         for (Event event : events) {

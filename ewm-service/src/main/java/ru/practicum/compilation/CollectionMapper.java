@@ -1,5 +1,6 @@
 package ru.practicum.compilation;
 
+import lombok.experimental.UtilityClass;
 import ru.practicum.compilation.dto.CompilationDto;
 import ru.practicum.compilation.dto.CompilationNewDto;
 import ru.practicum.event.EventMapper;
@@ -9,9 +10,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@UtilityClass
 public class CollectionMapper {
 
-    public static CompilationDto returnCompilationDto(Compilation compilation) {
+    public CompilationDto returnCompilationDto(Compilation compilation) {
 
         List<EventShortDto> eventShortDtoList = EventMapper.returnEventShortDtoList(compilation.getEvents());
 
@@ -27,14 +29,14 @@ public class CollectionMapper {
                 .build();
     }
 
-    public static Compilation returnCompilation(CompilationNewDto compilationNewDto) {
+    public Compilation returnCompilation(CompilationNewDto compilationNewDto) {
         return Compilation.builder()
                 .title(compilationNewDto.getTitle())
                 .pinned(compilationNewDto.getPinned())
                 .build();
     }
 
-    public static Set<CompilationDto> returnCompilationDtoSet(Iterable<Compilation> compilations) {
+    public Set<CompilationDto> returnCompilationDtoSet(Iterable<Compilation> compilations) {
 
         Set<CompilationDto> result = new HashSet<>();
         for (Compilation compilation : compilations) {

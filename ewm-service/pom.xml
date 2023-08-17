@@ -17,14 +17,14 @@
         <dependency>
             <groupId>ru.practicum</groupId>
             <artifactId>dto</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${dto}</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>ru.practicum</groupId>
             <artifactId>client</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <version>${client}</version>
             <scope>compile</scope>
         </dependency>
 
@@ -81,6 +81,8 @@
     </build>
 
     <properties>
+        <dto>0.0.1-SNAPSHOT</dto>
+        <client>0.0.1-SNAPSHOT</client>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

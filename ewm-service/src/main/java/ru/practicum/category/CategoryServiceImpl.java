@@ -48,7 +48,7 @@ public class CategoryServiceImpl implements CategoryService {
         unionService.getCategoryOrNotFound(categoryId);
 
         if (!eventRepository.findByCategoryId(categoryId).isEmpty()) {
-            throw new ConflictException("This category is used and cannot be deleted");
+            throw new ConflictException(String.format("This category id %s is used and cannot be deleted", categoryId));
         }
 
         categoryRepository.deleteById(categoryId);

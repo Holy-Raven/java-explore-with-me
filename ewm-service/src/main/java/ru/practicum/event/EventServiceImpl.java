@@ -28,10 +28,10 @@ import ru.practicum.util.enums.StateAction;
 import ru.practicum.util.UnionService;
 import ru.practicum.util.enums.Status;
 
-import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import static ru.practicum.Util.START_HISTORY;
 import static ru.practicum.util.enums.State.PUBLISHED;
 
 @Slf4j
@@ -227,14 +227,14 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public EventFullDto getEventById(Long eventId, HttpServletRequest request) {
+    public EventFullDto getEventById(Long eventId, String uri, String ip) {
 
         Event event = unionService.getEventOrNotFound(eventId);
         if (!event.getState().equals(PUBLISHED)) {
            throw new NotFoundException(Event.class, String.format("Event %s not published", eventId));
         }
 
-        sendInfo(request);
+        sendInfo(uri, ip);
         event.setViews(getViewsEventById(event.getId()));
         eventRepository.save(event);
 
@@ -242,7 +242,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventShortDto> getEventsByPublic(String text, List<Long> categories, Boolean paid, String rangeStart, String rangeEnd, Boolean onlyAvailable, String sort, Integer from, Integer size, HttpServletRequest request) {
+    public List<EventShortDto> getEventsByPublic(String text, List<Long> categories, Boolean paid, String rangeStart, String rangeEnd, Boolean onlyAvailable, String sort, Integer from, Integer size, String uri, String ip) {
 
         LocalDateTime startTime = unionService.parseDate(rangeStart);
         LocalDateTime endTime = unionService.parseDate(rangeEnd);
@@ -256,7 +256,7 @@ public class EventServiceImpl implements EventService {
         PageRequest pageRequest = PageRequest.of(from / size, size);
         List<Event> events = eventRepository.findEventsByPublicFromParam(text, categories, paid, startTime, endTime, onlyAvailable, sort, pageRequest);
 
-        sendInfo(request);
+        sendInfo(uri, ip);
         for (Event event : events) {
             event.setViews(getViewsEventById(event.getId()));
             eventRepository.save(event);
@@ -296,7 +296,7 @@ public class EventServiceImpl implements EventService {
                 event.setState(PUBLISHED);
                 event.setPublishedOn(LocalDateTime.now());
             } else if (eventUpdateDto.getStateAction() == StateAction.REJECT_EVENT ||
-                    eventUpdateDto.getStateAction() == StateAction.CANCEL_REVIEW) {
+                eventUpdateDto.getStateAction() == StateAction.CANCEL_REVIEW) {
                 event.setState(State.CANCELED);
             } else if (eventUpdateDto.getStateAction() == StateAction.SEND_TO_REVIEW) {
                 event.setState(State.PENDING);
@@ -310,11 +310,11 @@ public class EventServiceImpl implements EventService {
         return eventRepository.save(event);
     }
 
-    private void sendInfo(HttpServletRequest request) {
+    private void sendInfo(String uri, String ip) {
         HitDto hitDto = HitDto.builder()
                 .app("ewm-service")
-                .uri(request.getRequestURI())
-                .ip(request.getRemoteAddr())
+                .uri(uri)
+                .ip(ip)
                 .timestamp(LocalDateTime.now())
                 .build();
         client.addHit(hitDto);
@@ -323,7 +323,7 @@ public class EventServiceImpl implements EventService {
     private Long getViewsEventById(Long eventId) {
 
         String uri = "/events/" + eventId;
-        ResponseEntity<Object> response = client.findStats(LocalDateTime.of(1970, 1, 1, 0, 0), LocalDateTime.now(), uri, true);
+        ResponseEntity<Object> response = client.findStats(START_HISTORY, LocalDateTime.now(), uri, true);
         List<StatsDto> result = objectMapper.convertValue(response.getBody(), new TypeReference<>() {});
 
         if (result.isEmpty()) {

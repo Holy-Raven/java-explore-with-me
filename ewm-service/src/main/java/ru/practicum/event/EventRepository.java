@@ -27,9 +27,9 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "WHERE (:users IS NULL OR e.initiator.id IN :users) " +
             "AND (:states IS NULL OR e.state IN :states) " +
             "AND (:categories IS NULL OR e.category.id IN :categories) " +
-            "OR (CAST(:rangeStart AS date) IS NULL AND CAST(:rangeStart AS date) IS NULL)" +
-            "OR (CAST(:rangeStart AS date) IS NULL AND e.eventDate < CAST(:rangeEnd AS date)) " +
-            "OR (CAST(:rangeEnd AS date) IS NULL AND e.eventDate > CAST(:rangeStart AS date)) " +
+            "OR (:rangeStart IS NULL AND :rangeStart IS NULL)" +
+            "OR (:rangeStart IS NULL AND e.eventDate < :rangeEnd) " +
+            "OR (:rangeEnd IS NULL AND e.eventDate > :rangeStart) " +
             "GROUP BY e.id " +
             "ORDER BY e.id ASC")
 
@@ -48,9 +48,9 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             "OR (LOWER(e.title) LIKE LOWER(CONCAT('%', :text, '%'))) " +
             "AND (:categories IS NULL OR e.category.id IN :categories) " +
             "AND (:paid IS NULL OR e.paid = :paid) " +
-            "OR (CAST(:rangeStart AS date) IS NULL AND CAST(:rangeStart AS date) IS NULL)" +
-            "OR (CAST(:rangeStart AS date) IS NULL AND e.eventDate < CAST(:rangeEnd AS date)) " +
-            "OR (CAST(:rangeEnd AS date) IS NULL AND e.eventDate > CAST(:rangeStart AS date)) " +
+            "OR (:rangeStart IS NULL AND :rangeStart IS NULL)" +
+            "OR (:rangeStart IS NULL AND e.eventDate < :rangeEnd) " +
+            "OR (:rangeEnd IS NULL AND e.eventDate > :rangeStart) " +
             "AND (e.confirmedRequests < e.participantLimit OR :onlyAvailable = FALSE)" +
             "GROUP BY e.id " +
             "ORDER BY LOWER(:sort) ASC")

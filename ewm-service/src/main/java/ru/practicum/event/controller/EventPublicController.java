@@ -34,15 +34,22 @@ public class EventPublicController {
                                                  @Positive @RequestParam(name = "size", defaultValue = "10") Integer size,
                                                  HttpServletRequest request) {
 
+        String uri = request.getRequestURI();
+        String ip = request.getRemoteAddr();
+
         log.info("Get all events for public witch short info from parameters: text = {}, categories = {}, paid = {}, rangeStart = {}, rangeEnd = {}, onlyAvailable = {}, sort= {}, from = {}, size = {}",
                 text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
-        return eventService.getEventsByPublic(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size, request);
+        return eventService.getEventsByPublic(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size, uri, ip);
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(value = HttpStatus.OK)
     public EventFullDto getEventById(@PathVariable Long id, HttpServletRequest request) {
 
-        return eventService.getEventById(id, request);
+        String uri = request.getRequestURI();
+        String ip = request.getRemoteAddr();
+
+        log.info("Get Event id {}", id);
+        return eventService.getEventById(id, uri, ip);
     }
 }

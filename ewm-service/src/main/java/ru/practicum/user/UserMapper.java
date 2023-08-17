@@ -1,14 +1,16 @@
 package ru.practicum.user;
 
+import lombok.experimental.UtilityClass;
 import ru.practicum.user.dto.UserDto;
 import ru.practicum.user.dto.UserShortDto;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@UtilityClass
 public class UserMapper {
 
-    public static UserDto returnUserDto(User user) {
+    public UserDto returnUserDto(User user) {
         UserDto userDto = UserDto.builder()
                 .id(user.getId())
                 .email(user.getEmail())
@@ -17,7 +19,7 @@ public class UserMapper {
         return userDto;
     }
 
-    public static UserShortDto returnUserShortDto(User user) {
+    public UserShortDto returnUserShortDto(User user) {
         UserShortDto userShortDto = UserShortDto.builder()
                 .id(user.getId())
                 .name(user.getName())
@@ -25,7 +27,7 @@ public class UserMapper {
         return userShortDto;
     }
 
-    public static User returnUser(UserDto userDto) {
+    public User returnUser(UserDto userDto) {
         User user = User.builder()
                 .id(userDto.getId())
                 .email(userDto.getEmail())
@@ -34,7 +36,7 @@ public class UserMapper {
         return user;
     }
 
-    public static List<UserDto> returnUserDtoList(Iterable<User> users) {
+    public List<UserDto> returnUserDtoList(Iterable<User> users) {
         List<UserDto> result = new ArrayList<>();
 
         for (User user : users) {

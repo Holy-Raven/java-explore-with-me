@@ -3,7 +3,6 @@ package ru.practicum.event;
 import ru.practicum.event.dto.*;
 import ru.practicum.request.dto.RequestDto;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public interface EventService {
@@ -24,7 +23,7 @@ public interface EventService {
 
     List<EventFullDto> getEventsByAdmin(List<Long> users, List<String> states, List<Long> categories, String startTime, String endTime, Integer from, Integer size);
 
-    EventFullDto getEventById(Long eventId, HttpServletRequest request);
+    EventFullDto getEventById(Long eventId, String uri, String ip);
 
-    List<EventShortDto> getEventsByPublic(String text, List<Long> categories, Boolean paid, String startTime, String endTime, Boolean onlyAvailable, String sort, Integer from, Integer size, HttpServletRequest request);
+    List<EventShortDto> getEventsByPublic(String text, List<Long> categories, Boolean paid, String startTime, String endTime, Boolean onlyAvailable, String sort, Integer from, Integer size, String uri, String ip);
 }
