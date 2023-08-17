@@ -9,8 +9,9 @@ import ru.practicum.dto.StatsDto;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
+
+import static ru.practicum.Util.FORMATTER;
 
 @Slf4j
 @RestController
@@ -20,7 +21,7 @@ public class HitController {
     private final HitService hitService;
 
     @PostMapping("/hit")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(value = HttpStatus.CREATED)
     public void addHit(@Valid @RequestBody HitDto hitDto) {
 
         log.info("Hit created");
@@ -28,15 +29,16 @@ public class HitController {
     }
 
     @GetMapping("/stats")
-    public List<StatsDto> findStats(@RequestParam("start") String start,
+    @ResponseStatus(value = HttpStatus.OK)
+    public List<StatsDto> getStats(@RequestParam("start") String start,
                                    @RequestParam("end") String end,
                                    @RequestParam(required = false) List<String> uris,
                                    @RequestParam(required = false, defaultValue = "false") Boolean unique) {
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        LocalDateTime startTime = LocalDateTime.parse(start, formatter);
-        LocalDateTime endTime = LocalDateTime.parse(end, formatter);
+        LocalDateTime startTime = LocalDateTime.parse(start, FORMATTER);
+        LocalDateTime endTime = LocalDateTime.parse(end, FORMATTER);
 
-        return hitService.findStats(startTime, endTime, uris, unique);
+        log.info("Get stats");
+        return hitService.getStats(startTime, endTime, uris, unique);
     }
 }

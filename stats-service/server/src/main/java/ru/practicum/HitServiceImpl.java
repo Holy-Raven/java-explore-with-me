@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.dto.HitDto;
 import ru.practicum.dto.StatsDto;
+import ru.practicum.exception.StatsValidationException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,7 +27,13 @@ public class HitServiceImpl implements HitService {
     }
 
     @Override
-    public List<StatsDto> findStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
+    public List<StatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
+
+        if (start != null && end != null) {
+            if (start.isAfter(end)) {
+                throw new StatsValidationException("Start must be after End");
+            }
+        }
 
         if (uris == null || uris.isEmpty()) {
             if (unique) {

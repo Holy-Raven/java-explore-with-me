@@ -28,7 +28,7 @@ public interface HitRepository extends JpaRepository<Hit, Long> {
     List<StatsDto> findAllStats(@Param("start") LocalDateTime start,
                                 @Param("end") LocalDateTime end);
 
-    @Query(value = "SELECT new ru.practicum.dto.StatsDto(h.app, h.uri, COUNT (DISTINCT h.ip)) " +
+    @Query(value = "SELECT new ru.practicum.dto.StatsDto(h.app, h.uri, COUNT(DISTINCT h.ip)) " +
             "FROM Hit AS h " +
             "WHERE h.timestamp BETWEEN :start AND :end " +
             "AND h.uri IN :uris " +
