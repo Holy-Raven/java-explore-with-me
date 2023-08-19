@@ -4,7 +4,6 @@ import lombok.experimental.UtilityClass;
 import ru.practicum.comments.dto.CommentFullDto;
 import ru.practicum.comments.dto.CommentNewDto;
 import ru.practicum.comments.dto.CommentShortDto;
-import ru.practicum.comments.dto.CommentUpdateDto;
 import ru.practicum.event.EventMapper;
 import ru.practicum.event.model.Event;
 import ru.practicum.user.User;
@@ -22,16 +21,6 @@ public class CommentMapper {
                 .event(event)
                 .message(commentNewDto.getMessage())
                 .created(commentNewDto.getCreated())
-                .build();
-        return comment;
-    }
-
-    public Comment returnComment(CommentUpdateDto commentUpdateDto, User user, Event event) {
-        Comment comment = Comment.builder()
-                .user(user)
-                .event(event)
-                .message(commentUpdateDto.getMessage())
-                .created(commentUpdateDto.getCreated())
                 .build();
         return comment;
     }

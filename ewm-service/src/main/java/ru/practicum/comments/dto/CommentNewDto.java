@@ -26,7 +26,7 @@ public class CommentNewDto {
     Long event;
 
     @NotBlank(message = "message cannot be empty and consist only of spaces.")
-    @Size(min = 20, max = 500, message = "message must be greater than 20 and less than 500")
+    @Size(max = 500, message = "message must be greater than 20 and less than 500")
     String message;
 
     @NotNull
