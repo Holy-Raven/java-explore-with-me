@@ -11,7 +11,6 @@ import ru.practicum.event.model.Location;
 import ru.practicum.user.User;
 import ru.practicum.user.UserMapper;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
