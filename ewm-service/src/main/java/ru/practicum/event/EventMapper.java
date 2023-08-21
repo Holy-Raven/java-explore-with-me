@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ru.practicum.Util.CURRENT_TIME;
 import static ru.practicum.util.enums.State.PENDING;
 
 @UtilityClass
@@ -31,7 +32,7 @@ public class EventMapper {
                 .paid(eventNewDto.getPaid())
                 .participantLimit(eventNewDto.getParticipantLimit())
                 .requestModeration(eventNewDto.getRequestModeration())
-                .createdOn(LocalDateTime.now())
+                .createdOn(CURRENT_TIME)
                 .views(0L)
                 .state(PENDING)
                 .confirmedRequests(0L)

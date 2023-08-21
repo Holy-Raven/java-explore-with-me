@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.comments.dto.CommentFullDto;
 import ru.practicum.comments.dto.CommentNewDto;
 import ru.practicum.comments.dto.CommentShortDto;
-import ru.practicum.comments.dto.CommentUpdateDto;
 import ru.practicum.event.model.Event;
 import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.ValidationException;
@@ -17,6 +16,8 @@ import ru.practicum.util.UnionService;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static ru.practicum.Util.CURRENT_TIME;
 
 @Slf4j
 @Service
@@ -42,20 +43,16 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public CommentFullDto updateComment(CommentUpdateDto commentUpdateDto) {
+    public CommentFullDto updateComment(Long userId, Long commentId, CommentNewDto commentNewDto) {
 
-        Comment comment = unionService.getCommentOrNotFound(commentUpdateDto.getId());
+        Comment comment = unionService.getCommentOrNotFound(commentId);
 
-        if (!commentUpdateDto.getUser().equals(comment.getUser().getId())) {
-            throw new ConflictException(String.format("User %s is not the author of the comment %s.",commentUpdateDto.getUser(), commentUpdateDto.getId()));
+        if (!userId.equals(comment.getUser().getId())) {
+            throw new ConflictException(String.format("User %s is not the author of the comment %s.",userId, commentId));
         }
 
-        if (!commentUpdateDto.getEvent().equals(comment.getEvent().getId())) {
-            throw new ConflictException(String.format("This comment %s does not relate to this event %s.",commentUpdateDto.getId(), commentUpdateDto.getEvent()));
-        }
-
-        if (commentUpdateDto.getMessage() != null && !commentUpdateDto.getMessage().isBlank()) {
-            comment.setMessage(commentUpdateDto.getMessage());
+        if (commentNewDto.getMessage() != null && !commentNewDto.getMessage().isBlank()) {
+            comment.setMessage(commentNewDto.getMessage());
         }
 
         comment = commentRepository.save(comment);
@@ -90,6 +87,9 @@ public class CommentServiceImpl implements CommentService {
             if (startTime.isAfter(endTime)) {
                 throw new ValidationException("Start must be after End");
             }
+            if (endTime.isAfter(CURRENT_TIME) || startTime.isAfter(CURRENT_TIME)) {
+                throw new ValidationException("date must be the past");
+            }
         }
 
         List<Comment> commentList = commentRepository.getCommentsByUserId(userId, startTime, endTime, pageRequest);
@@ -109,7 +109,11 @@ public class CommentServiceImpl implements CommentService {
             if (startTime.isAfter(endTime)) {
                 throw new ValidationException("Start must be after End");
             }
+            if (endTime.isAfter(CURRENT_TIME) || startTime.isAfter(CURRENT_TIME)) {
+                throw new ValidationException("date must be the past");
+            }
         }
+
         List<Comment> commentList = commentRepository.getComments(startTime, endTime, pageRequest);
 
         return CommentMapper.returnCommentFullDtoList(commentList);
@@ -135,6 +139,9 @@ public class CommentServiceImpl implements CommentService {
         if (startTime != null && endTime != null) {
             if (startTime.isAfter(endTime)) {
                 throw new ValidationException("Start must be after End");
+            }
+            if (endTime.isAfter(CURRENT_TIME) || startTime.isAfter(CURRENT_TIME)) {
+                throw new ValidationException("date must be the past");
             }
         }
 

@@ -12,6 +12,8 @@ import ru.practicum.user.UserMapper;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ru.practicum.Util.CURRENT_TIME;
+
 @UtilityClass
 public class CommentMapper {
 
@@ -20,7 +22,7 @@ public class CommentMapper {
                 .user(user)
                 .event(event)
                 .message(commentNewDto.getMessage())
-                .created(commentNewDto.getCreated())
+                .created(CURRENT_TIME)
                 .build();
         return comment;
     }

@@ -8,7 +8,6 @@ import ru.practicum.comments.CommentService;
 import ru.practicum.comments.dto.CommentFullDto;
 import ru.practicum.comments.dto.CommentNewDto;
 import ru.practicum.comments.dto.CommentShortDto;
-import ru.practicum.comments.dto.CommentUpdateDto;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
@@ -35,12 +34,12 @@ public class CommentPrivateController {
 
     @PatchMapping("/{commentId}")
     @ResponseStatus(value = HttpStatus.OK)
-    public CommentFullDto updateComment(@Valid @RequestBody CommentUpdateDto commentUpdateDto,
+    public CommentFullDto updateComment(@Valid @RequestBody CommentNewDto commentNewDto,
                                         @PathVariable Long userId,
                                         @PathVariable Long commentId) {
 
         log.info("User id {} update Comment {} ", userId, commentId);
-        return commentService.updateComment(commentUpdateDto);
+        return commentService.updateComment(userId, commentId, commentNewDto);
     }
 
     @DeleteMapping("/{commentId}")
@@ -53,6 +52,7 @@ public class CommentPrivateController {
     }
 
     @GetMapping
+    @ResponseStatus(value = HttpStatus.OK)
     public List<CommentShortDto> getCommentsByUserId(@PathVariable Long userId,
                                                          @RequestParam(required = false, name = "rangeStart") String rangeStart,
                                                          @RequestParam(required = false, name = "rangeEnd") String rangeEnd,

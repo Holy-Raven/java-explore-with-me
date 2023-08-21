@@ -14,7 +14,7 @@ services:
       - spring_datasource_url=jdbc:postgresql://stats-db:5432/stats-server-db
       - spring.datasource.user=root
       - spring.datasource.password=root
-#      - TZ=Europe/Moscow
+      - TZ=Europe/Moscow
 
   stats-db:
     image: postgres:14.3-alpine
@@ -25,7 +25,7 @@ services:
       - POSTGRES_DB=stats-server-db
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
-#      - TZ=Europe/Moscow
+      - TZ=Europe/Moscow
 
   ewm-service:
     build: ewm-service
@@ -40,7 +40,7 @@ services:
       - stats-server.url=http://stats-server:9090
       - spring.datasource.user=root
       - spring.datasource.password=root
-#      - TZ=Europe/Moscow
+      - TZ=Europe/Moscow
 
   ewm-db:
     image: postgres:14.3-alpine
@@ -51,4 +51,4 @@ services:
       - POSTGRES_DB=ewm-server-db
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
-#      - TZ=Europe/Moscow
+      - TZ=Europe/Moscow

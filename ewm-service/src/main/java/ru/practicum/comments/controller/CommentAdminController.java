@@ -28,6 +28,7 @@ public class CommentAdminController {
     }
 
     @GetMapping
+    @ResponseStatus(value = HttpStatus.OK)
     public List<CommentFullDto> getComments(@RequestParam(required = false, name = "rangeStart") String rangeStart,
                                             @RequestParam(required = false, name = "rangeEnd") String rangeEnd,
                                             @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
@@ -36,5 +37,4 @@ public class CommentAdminController {
         log.info("Get all comment from {} to end {}.", rangeStart, rangeEnd);
         return commentService.getComments(rangeStart, rangeEnd, from, size);
     }
-
 }
