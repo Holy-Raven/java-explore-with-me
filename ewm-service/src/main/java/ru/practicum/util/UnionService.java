@@ -1,6 +1,7 @@
 package ru.practicum.util;
 
 import ru.practicum.category.Category;
+import ru.practicum.comments.Comment;
 import ru.practicum.compilation.Compilation;
 import ru.practicum.event.model.Event;
 import ru.practicum.request.Request;
@@ -19,6 +20,8 @@ public interface UnionService {
     Request getRequestOrNotFound(Long requestId);
 
     Compilation getCompilationOrNotFound(Long compId);
+
+    Comment getCommentOrNotFound(Long commentId);
 
     LocalDateTime parseDate(String date);
 }

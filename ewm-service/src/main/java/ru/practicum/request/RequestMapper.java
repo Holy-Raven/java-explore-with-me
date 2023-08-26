@@ -6,9 +6,10 @@ import ru.practicum.request.dto.RequestDto;
 import ru.practicum.user.User;
 import ru.practicum.util.enums.Status;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static ru.practicum.Util.CURRENT_TIME;
 
 @UtilityClass
 public class RequestMapper {
@@ -26,7 +27,7 @@ public class RequestMapper {
     public Request returnRequest(RequestDto requestDto, Event event, User user) {
         Request request = Request.builder()
                 .id(requestDto.getId())
-                .created(LocalDateTime.now())
+                .created(CURRENT_TIME)
                 .event(event)
                 .requester(user)
                 .status(Status.PENDING)

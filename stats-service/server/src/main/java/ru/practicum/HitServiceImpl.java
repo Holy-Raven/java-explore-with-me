@@ -11,6 +11,8 @@ import ru.practicum.exception.StatsValidationException;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static ru.practicum.Util.FORMATTER;
+
 @Service
 @Slf4j
 @Transactional(readOnly = true)
@@ -27,10 +29,14 @@ public class HitServiceImpl implements HitService {
     }
 
     @Override
-    public List<StatsDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
+    public List<StatsDto> getStats(String start, String end, List<String> uris, Boolean unique) {
 
-        if (start != null && end != null) {
-            if (start.isAfter(end)) {
+        LocalDateTime startTime = LocalDateTime.parse(start, FORMATTER);
+        LocalDateTime endTime = LocalDateTime.parse(end, FORMATTER);
+
+
+        if (startTime != null && endTime != null) {
+            if (startTime.isAfter(endTime)) {
                 throw new StatsValidationException("Start must be after End");
             }
         }
@@ -38,18 +44,18 @@ public class HitServiceImpl implements HitService {
         if (uris == null || uris.isEmpty()) {
             if (unique) {
                 log.info("Get all stats by uniq ip");
-                return hitRepository.findAllStatsByUniqIp(start, end);
+                return hitRepository.findAllStatsByUniqIp(startTime, endTime);
             } else {
                 log.info("Get all stats");
-                return hitRepository.findAllStats(start, end);
+                return hitRepository.findAllStats(startTime, endTime);
             }
         } else {
             if (unique) {
                 log.info("Get all stats by uri and uniq ip");
-                return hitRepository.findStatsByUrisByUniqIp(start, end, uris);
+                return hitRepository.findStatsByUrisByUniqIp(startTime, endTime, uris);
             } else {
                 log.info("Get all stats by uri");
-                return hitRepository.findStatsByUris(start, end, uris);
+                return hitRepository.findStatsByUris(startTime, endTime, uris);
             }
         }
     }
